@@ -1,0 +1,74 @@
+.footerContainer {
+    background-color: rgba(255, 199, 40, 0.7);
+    margin-bottom: 1rem;
+    margin-top: 1rem;
+}
+
+.formContainer {
+  background-color: white;
+  padding-right: 15px;
+  padding-left: 15px;
+  margin-right: auto;
+  margin-left: auto;
+  padding: 3rem 1.25rem;
+  /* margin-bottom: 3rem; */
+}
+
+.paddingContainer {
+    padding: 3rem 1.25rem;
+}
+
+.shadowContainer {
+    position: relative;
+    background-color: #fff;
+    z-index: 2;
+    box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.06), 0 2px 5px 0 rgba(0, 0, 0, 0.2);
+}
+
+.tiitle-box {
+    margin-bottom: 3rem;
+}
+
+.contact-title {
+    font-size: 2rem;
+    position: relative;
+}
+
+.contact-title:before {
+    content: '';
+    position: absolute;
+    height: 3px;
+    background-color: #FFC728;
+    width: 100px;
+    bottom: -12px;
+}
+
+.additionalInfo {
+    font-size: 1.25rem;
+    font-weight: 300;
+}
+
+.getInTouchButtonsColor {
+    color: rgba(58, 58, 58, 0.986);
+    background-color: rgba(253, 193, 27, 0.705);
+    border-color: rgba(253, 193, 27, 0.705);
+}
+
+.getInTouchButtonsColor:hover {
+    background-color: rgb(255, 187, 0);
+    border-color: rgba(255, 199, 40, 0.7);
+}
+
+@media (min-width: 1200px) {
+  .formContainer {
+    max-width: 1140px;
+  }
+}
+
+
+
+/* @media (min-width: 768px) {
+  .formContainer {
+    margin-top: 3rem;
+  }
+} */
