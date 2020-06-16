@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Application.Orders;
-using Domain;
+using Api.Application.Orders;
+using Api.Domain;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 

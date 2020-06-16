@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Application.Classes;
-using Application.Staffs;
-using Domain;
+using Api.Application.Classes;
+using Api.Application.Staffs;
+using Api.Domain;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

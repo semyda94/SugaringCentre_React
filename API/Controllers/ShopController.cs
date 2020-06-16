@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Application.ProductImage;
-using Application.Products;
-using Domain;
+using Api.Application.ProductImage;
+using Api.Application.Products;
+using Api.Domain;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
@@ -22,12 +22,12 @@ namespace API.Controllers
 
         [HttpGet("imageFor/{id}")]
         public async Task<ActionResult<ProductImage>> Image(int id) {
-            return await Mediator.Send(new Application.ProductImage.Details.Query {Id = id});
+            return await Mediator.Send(new Api.Application.ProductImage.Details.Query {Id = id});
         }
 
         [HttpGet("details/{id}")]
         public async Task<ActionResult<Product>> Details(int id ){
-            return await Mediator.Send(new Application.Products.Details.Query {Id = id});
+            return await Mediator.Send(new Api.Application.Products.Details.Query {Id = id});
         }
     }
 }

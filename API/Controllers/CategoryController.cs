@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Application.Categories;
-using Domain;
+using Api.Application.Categories;
+using Api.Domain;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 

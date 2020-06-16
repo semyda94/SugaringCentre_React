@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
-using Application.User;
-using Domain;
+using Api.Application.User;
+using Api.Domain;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 

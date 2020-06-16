@@ -1,12 +1,12 @@
 using System;
-using Domain;
+using Api.Domain;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Persistence;
+using Api.Persistence;
 
 namespace API
 {
@@ -21,7 +21,8 @@ namespace API
 
                 try {
                     var context = services.GetRequiredService<DataContext>();
-                    context.Database.Migrate();
+                    context.
+                    Database.Migrate();
                     
                     var userManager = services.GetRequiredService<UserManager<AppUser>>();
                     Seed.SeedData(context, userManager).Wait();

@@ -1,9 +1,5 @@
 using System.Text;
-using Application.Interfaces;
-using Application.User;
-using Domain;
 using FluentValidation.AspNetCore;
-using Infrastructure.Security;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -13,8 +9,12 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
-using Persistence;
 using API.Middleware;
+using Api.Application.User;
+using Api.Application.Interfaces;
+using Api.Infrastructure.Security;
+using Api.Persistence;
+using Api.Domain;
 
 namespace API
 {
@@ -40,7 +40,7 @@ namespace API
                 });
             });
 
-            services.AddMediatR(typeof(Application.Staffs.List.Handler).Assembly);
+            services.AddMediatR(typeof(Api.Application.Staffs.List.Handler).Assembly);
 
             services.AddControllers()
             .AddFluentValidation(cfg => {
