@@ -1,5 +1,22 @@
-import React, { useEffect, useContext } from 'react'
-import { Link } from 'react-router-dom';
+/*!
+
+=========================================================
+* Argon Dashboard PRO React - v1.1.0
+=========================================================
+
+* Product Page: https://www.creative-tim.com/product/argon-dashboard-pro-react
+* Copyright 2020 Creative Tim (https://www.creative-tim.com)
+
+* Coded by Creative Tim
+
+=========================================================
+
+* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+*/
+
+
+import React, { useContext } from 'react'
 import { observer } from 'mobx-react-lite';
 
 // reactstrap components
@@ -118,7 +135,7 @@ const ServiceTable: React.FC<IStaffTableProps> = ({modifyHook}) => {
                                             color="success"
                                             type="button"
                                             onClick={() => {modifyHook(true)}}>
-                                            New Staff
+                                            New Service
                                     </Button>
                                 </Col>
                                 <Col>

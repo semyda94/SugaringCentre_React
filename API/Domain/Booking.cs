@@ -15,7 +15,7 @@ namespace Api.Domain
         [Column("Staff")] public int StaffId { get; set; }
         [Column("Client")] public int? ClientId { get; set; }
         public DateTime Date { get; set; }
-        public DateTime Time { get; set; }
+        public string Time { get; set; }
         [MaxLength(255)]
         public string FirstName { get; set; }
         [MaxLength(255)]

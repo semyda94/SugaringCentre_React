@@ -10,6 +10,7 @@ import { IProductImage } from '../models/products/productImage';
 import {IOrder} from '../models/orders/Order'
 import { IService } from '../models/services/service'
 import { IServiceCategory } from '../models/services/serviceCategory';
+import { IBooking } from '../models/Booking'
 
 axios.defaults.baseURL = 'http://localhost:5000/api';
 
@@ -86,6 +87,7 @@ const Order = {
 
 const Service = {
     list: (): Promise<IService[]> => request.get('/service'),
+    options: (): Promise<{value: number, label: string}[]> => request.get('/service/options'),
     details: (id: number) : Promise<IService> => request.get(`/service/${id}`),
     masters: (id: number) : Promise<IStaff[]> => request.get(`/service/masters/${id}`),
     create: (service: IService) => request.post('/service', service),
@@ -98,5 +100,9 @@ const ServiceCategory = {
     delete: (id: number) => request.delete(`/servicecategory/${id}`)
 }
 
-export default  { Staff, Category, Product, Shop, Order, Service, ServiceCategory }
+const Booking = {
+    create: (booking: IBooking) => request.post('/bookings', booking)
+}
+
+export default  { Staff, Category, Product, Shop, Order, Service, ServiceCategory, Booking }
 

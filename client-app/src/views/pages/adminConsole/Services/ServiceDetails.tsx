@@ -115,6 +115,8 @@ const ServiceDetails: React.FC<IServiceDetailsProps> = ({ selectedService, modif
 
     const handleSubmit = () => {
         let fileToUpload: string = ""
+        console.log(Dropzone.instances[0].getUploadingFiles());
+        
         if (Dropzone.instances[0].getUploadingFiles().length !== 0) {
             fileToUpload = Dropzone.instances[0].getUploadingFiles()[0].dataURL!;
         }

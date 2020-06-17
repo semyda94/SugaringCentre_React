@@ -1,13 +1,13 @@
-import React, { useContext, useEffect, useState, useRef } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { observer } from 'mobx-react-lite';
 import { Container, Card, Row, Col, Input, FormGroup, Button, Form } from 'reactstrap';
 
 import Calendar, { CalendarTileProperties } from 'react-calendar';
-import TimePicker from 'react-bootstrap-time-picker';
 import Select from 'react-select';
 
 import ServiceStore from '../../../app/strore/serviceStores/serviceStore';
 import StaffStore from '../../../app/strore/staffStore'
+import BookingStore from '../../../app/strore/bookingStore'
 
 import 'react-calendar/dist/Calendar.css';
 import './../../../assets/css/booking-confirmation.css';
@@ -15,19 +15,19 @@ import './../../../assets/css/booking-confirmation.css';
 const BookingConfigrmation = (props: any) => {
   const serviceStore = useContext(ServiceStore);
   const staffStore = useContext(StaffStore);
+  const bookingStore = useContext(BookingStore);
 
   const { loadServiceDetails, serviceDetails, loadMasters, masterOptions } = serviceStore;
   const { workingDaysOfStaff, loadTimeOptionsForDate, workingDaysOfSelectedStaff, timeOptions } = staffStore;
+  const { createBooking } = bookingStore;
 
   const [masterSelected, setmasterSelected] = useState<{ value: number, label: string } | undefined>(undefined);
   const [dateSelected, setdateSelected] = useState<string | undefined>(undefined);
   const [timeSelected, settimeSelected] = useState<{ value: Date, label: string } | undefined>(undefined);
-  const [firstName, setfirstName] = useState({value: "", state: "invalid"})
-  const [lastName, setlastName] = useState({value: "", state: "invalid"})
-  const [email, setEmail] = useState({value: "", state: "invalid"})
-  const [phone, setPhone] = useState({value: "", state: "invalid"})
-
-  const timePickerRef = useRef();
+  const [firstName, setfirstName] = useState({ value: "", state: "invalid" })
+  const [lastName, setlastName] = useState({ value: "", state: "invalid" })
+  const [email, setEmail] = useState({ value: "", state: "invalid" })
+  const [phone, setPhone] = useState({ value: "", state: "invalid" })
 
   useEffect(() => {
     loadServiceDetails(props.match.params.id);
@@ -54,42 +54,38 @@ const BookingConfigrmation = (props: any) => {
   }
 
   const handleInputChanged = (e: React.ChangeEvent<HTMLInputElement>, stateName: string) => {
+    console.log(e.target.value);
+    
     switch (stateName) {
-        case "phone":
-            let newPhoone = phone;
-            newPhoone.value = e.target.value;
-            newPhoone.state = e.target.value === "" ? "invalid" : "valid";
-
-            setPhone(newPhoone);
-            break;
-        case "email":
-            let newEmail = email;
-            newEmail.value = e.target.value;
-            newEmail.state = e.target.value === "" ? "invalid" : "valid";
-
-            setEmail(newEmail);
-            break;
-        case "firstname":
-            let newFirstName = firstName;
-            newFirstName.value = e.target.value;
-            newFirstName.state = e.target.value === "" ? "invalid" : "valid";
-
-            setfirstName(newFirstName);
-            break;
-        case "lastname":
-            let newLastName = lastName;
-            newLastName.value = e.target.value;
-            newLastName.state = e.target.value === "" ? "invalid" : "valid";
-
-            setlastName(newLastName);
-            break;
-        default:
-            break;
+      case "phone":
+        setPhone({value: e.target.value, state: e.target.value === "" ? "invalid" : "valid"});
+        break;
+      case "email":
+        setEmail({value: e.target.value, state: e.target.value === "" ? "invalid" : "valid"});
+        break;
+      case "firstname":
+        setfirstName({value: e.target.value, state: e.target.value === "" ? "invalid" : "valid"});
+        break;
+      case "lastname":
+        setlastName({value: e.target.value, state: e.target.value === "" ? "invalid" : "valid"});
+        break;
+      default:
+        break;
     }
-};
+  };
 
   const handleOnSubmit = () => {
-    
+    createBooking({
+      bookingId: 0,
+      serviceId: serviceDetails?.serviceId!,
+      staffId: masterSelected?.value!,
+      date: new Date(dateSelected!),
+      time: timeSelected?.label!,
+      firstName: firstName.value,
+      lastName: lastName.value,
+      email: email.value,
+      phone: phone.value
+    });
   }
 
   return (
@@ -109,7 +105,7 @@ const BookingConfigrmation = (props: any) => {
         }}>
 
         <Card style={{ paddingTop: "70px", paddingBottom: "20px", textAlign: "center" }}>
-          <Form noValidate>
+          <Form noValidate onSubmit={handleOnSubmit}>
             <Row>
               <Col md={6}>
                 <Container>
@@ -208,7 +204,7 @@ const BookingConfigrmation = (props: any) => {
                       id="input-last-name"
                       placeholder="Last Name"
                       type="text"
-                       onChange={e => handleInputChanged(e, "lastname")}
+                      onChange={e => handleInputChanged(e, "lastname")}
                     />
                   </FormGroup>
 
@@ -236,7 +232,6 @@ const BookingConfigrmation = (props: any) => {
                       Phone*
                             </label>
                     <Input
-                      // defaultValue={postalCode.value}
                       className="form-control-alternative"
                       id="input-phone"
                       placeholder="Phone"
@@ -286,9 +281,13 @@ const BookingConfigrmation = (props: any) => {
                   <div>
                     <Button
                       disabled={
-                        masterSelected === undefined || dateSelected === undefined || timeSelected === undefined ||
-                        firstName.state === "invalid" || lastName.state === "invalid" ||
-                        email.state === "invalid" || phone.state === "invalid"
+                        masterSelected === undefined ||
+                        dateSelected === undefined ||
+                        timeSelected === undefined ||
+                        firstName.state === "invalid" || 
+                        lastName.state === "invalid" ||
+                        email.state === "invalid" || 
+                        phone.state === "invalid"
                       }
                       className="bookItButton">Book It</Button>
                   </div>

@@ -29,7 +29,7 @@ import { IStaff } from './../../../../app/models/staff/staff'
 
 //Sotre
 import StaffStore from './../../../../app/strore/staffStore'
-import ServiceCategoryStore from './../../../../app/strore/serviceStores/serviceCategoryStore'
+import ServiceStore  from './../../../../app/strore/serviceStores/serviceStore'
 
 // reactstrap components
 import {
@@ -59,10 +59,10 @@ interface DetailParams {
 const Details = () => {
 
     const staffStore = useContext(StaffStore)
-    const serviceCategoryStore = useContext(ServiceCategoryStore);
+    const serviceStore = useContext(ServiceStore)
 
     const { createStaff } = staffStore
-    const { loadServiceCategory, categoryOption } = serviceCategoryStore;
+    const { serviceOptions, loadServiceOptions } = serviceStore;
 
     const [username, setUsername] = useState({ value: "", state: "invalid" })
     const [email, setEmail] = useState({ value: "", state: "invalid" })
@@ -83,7 +83,7 @@ const Details = () => {
     Dropzone.autoDiscover = false;
 
     useEffect(() => {
-        loadServiceCategory()
+        loadServiceOptions();
 
         // this variable is to delete the previous image from the dropzone state
         // it is just to make the HTML DOM a bit better, and keep it light
@@ -602,12 +602,12 @@ const Details = () => {
                                                     className="form-control-label"
                                                     htmlFor="selectCategories"
                                                 >
-                                                    Working Days
+                                                    Services
                                                 </label>
                                                 <Select
                                                     id="selectCategories"
-                                                    placeholder="Select Categories"
-                                                    options={categoryOption}
+                                                    placeholder="Select Services"
+                                                    options={serviceOptions}
                                                     onChange={e => handleSelectChange(e, "selectCategories")}
                                                     isMulti />
                                             </FormGroup>

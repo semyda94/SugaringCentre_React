@@ -3,7 +3,6 @@ import { createContext } from "react";
 import agent from "./../../api/agent";
 
 import { IService } from "./../../models/services/service";
-import { IStaff } from "../../models/staff/staff";
 
 class ServiceStore {
   @observable serviceList: IService[] = [];
@@ -11,6 +10,7 @@ class ServiceStore {
   @observable serviceDetails: IService | undefined = undefined;
   @observable openedCollapses: string[] = []
 
+  @observable serviceOptions: {value: number, label: string}[] = []
   @observable masterOptions: {value: number, label: string}[] = [];
 
   @observable initialLoading = false;
@@ -37,6 +37,20 @@ class ServiceStore {
       });
     }
   };
+
+  @action loadServiceOptions = async () => {
+    this.serviceOptions = [];
+
+    try {
+      var opt = await agent.Service.options();
+
+      runInAction('Continue load options', () => {
+        this.serviceOptions = opt;
+      })
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
   @action loadServiceDetails = async (id: number) => {
     this.initialLoading = true;

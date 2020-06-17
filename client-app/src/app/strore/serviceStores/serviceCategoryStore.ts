@@ -14,6 +14,9 @@ class ServiceCategoryStore {
     this.initialLoading = true;
 
     try {
+      this.serviceCategoryList = [];
+      this.categoryOption = [];
+      
       var categories = await agent.ServiceCategory.list();
 
       runInAction("Continue after loading service categories", () => {

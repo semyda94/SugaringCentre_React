@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Api.Domain;
+using API.Application.Classes;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,6 +10,11 @@ namespace API.Controllers {
         [HttpGet]
         public async Task<ActionResult<List<Service>>> List () {
             return await Mediator.Send (new Api.Application.Services.List.Query ());
+        }
+
+        [HttpGet("options")]
+        public async Task<ActionResult<List<SelectOptions>>> Options () {
+            return await Mediator.Send (new API.Application.Services.Options.Query());
         }
 
         [HttpGet ("{id}")]
