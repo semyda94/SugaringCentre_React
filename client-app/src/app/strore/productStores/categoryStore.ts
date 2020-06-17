@@ -88,13 +88,12 @@ class CategoryStory {
             await agent.Category.update(category);
             
             runInAction('continue edit category', () => {
-                const indexToDelete = this.categoryList.indexOf(this.categoryList[category.categoryId]);
+                this.categoryList.forEach(categoryToUpdate => {
+                    if (categoryToUpdate.categoryId === category.categoryId) {
+                        categoryToUpdate.name = category.name
+                    }
+                });
 
-                if (indexToDelete > -1) {
-                    this.categoryList.splice(indexToDelete, 1);
-                }
-
-                this.categoryList.push(category);
                 this.submiting = false;
             })
         } catch (error) {

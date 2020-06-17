@@ -65,29 +65,38 @@ const Categories = () => {
         if (!modifyMode) {
             setModifyMode(!modifyMode);
         }
-        
+
         setinputField({ categoryname: "", categorynameState: "invalid" });
         setSelectedCategory(0);
     }
 
+    const handleSelectEditCategory = (idx: number) => {
+        if (!modifyMode) {
+            setModifyMode(true);
+        }
+
+        let newState = inputField;
+
+        newState.categoryname = categoryList[idx].name;
+        if (newState.categoryname === "") {
+            newState.categorynameState = "invalid";
+        } else {
+            newState.categorynameState = "valid";
+        }
+
+        setinputField(newState);
+        setSelectedCategory(categoryList[idx].categoryId);
+    }
+
     const customStylesForm = (e: React.ChangeEvent<HTMLInputElement>, stateName: string) => {
-        console.log(stateName + "   |   " + e.target.value);
-        console.log(inputField.categoryname + "  |  " + inputField.categorynameState)
         let newState = inputField;
         switch (stateName) {
             case "categoryname":
-                newState.categoryname = e.target.value;
-                newState.categorynameState = e.target.value === "" ? "invalid" : "valid"
+                setinputField({ categoryname: e.target.value, categorynameState: e.target.value === "" ? "invalid" : "valid" })
                 break;
-
             default:
                 break;
         }
-
-        setinputField(newState)
-
-        console.log(stateName + "   |   " + e.target.value);
-        console.log(inputField.categoryname + "  |  " + inputField.categorynameState)
     };
 
     const validateCustomStylesForm = () => {
@@ -102,46 +111,28 @@ const Categories = () => {
         setinputField(newState)
     };
 
-    const handleCreateNewCategory = () => {
+    const handleSubmitForm = () => {
         if (inputField.categorynameState === 'valid') {
-            const category: ICategory =
-            {
-                categoryId: 0,
-                name: inputField.categoryname
-            }
-
-
-            if (selectedCategory > 0) {
-                editCategory(category);
+            if (selectedCategory == 0) {
+                createCategory({
+                    categoryId: 0,
+                    name: inputField.categoryname
+                });
             } else {
-                createCategory(category);
+                editCategory({
+                    categoryId: selectedCategory,
+                    name: inputField.categoryname
+                })
             }
 
             setModifyMode(false);
         }
     }
 
-    const handleEditCategory = (idx: number) => {
-        if (!modifyMode) {
-            setModifyMode(true);
-        }
-        
-        let newState = inputField;
-
-        newState.categoryname = categoryList[idx].name;
-        if (newState.categoryname === "") {
-            newState.categorynameState = "invalid";
-        } else {
-            newState.categorynameState = "valid";
-        }
-
-        setinputField(newState);
-        setSelectedCategory(idx);
-    }
 
     return (
         <>
-            <ProductCategoriesHeader name="Categories" parentName="Products"  action={handleNewCategoryButton} />
+            <ProductCategoriesHeader name="Categories" parentName="Products" action={handleNewCategoryButton} />
 
             <Container className="mt--6" fluid>
                 <Row>
@@ -189,7 +180,7 @@ const Categories = () => {
                                                     <DropdownMenu className="dropdown-menu-arrow" right>
                                                         <DropdownItem
                                                             href="#pablo"
-                                                            onClick={() => {handleEditCategory(idx)}}
+                                                            onClick={() => { handleSelectEditCategory(idx) }}
                                                         >
                                                             Edit
                                                     </DropdownItem>
@@ -266,7 +257,9 @@ const Categories = () => {
                             <div className="card-wrapper">
                                 <Card>
                                     <CardHeader>
-                                        <h3 className="mb-0">New Category</h3>
+                                        {selectedCategory === 0 ?
+                                            <h3 className="mb-0">New Category</h3> :
+                                            <h3 className="mb-0">Edit Category</h3>}
                                     </CardHeader>
                                     <CardBody>
                                         <Row>
@@ -277,7 +270,7 @@ const Categories = () => {
                                             </Col>
                                         </Row>
                                         <hr />
-                                        <Form className="needs-validation" noValidate onSubmit={handleCreateNewCategory}>
+                                        <Form className="needs-validation" noValidate onSubmit={handleSubmitForm}>
                                             <div className="form-row">
                                                 <Col className="mb-3" md="12">
                                                     <label
@@ -291,17 +284,11 @@ const Categories = () => {
                                                         id="validationCustom01"
                                                         placeholder="Category Name"
                                                         type="text"
-                                                        valid={
-                                                            inputField.categorynameState === "valid"
-                                                        }
-                                                        invalid={
-                                                            inputField.categorynameState ===
-                                                            "invalid"
-                                                        }
-                                                        onChange={e =>
-                                                            customStylesForm(e, "categoryname")
-                                                        }
+                                                        valid={inputField.categorynameState === "valid"}
+                                                        invalid={inputField.categorynameState === "invalid"}
+                                                        onChange={e => customStylesForm(e, "categoryname")}
                                                     />
+                                                    <div className="invalid-feedback">Category name shouldn't be empty</div>
                                                     <div className="valid-feedback">Looks good!</div>
                                                 </Col>
                                             </div>
@@ -309,8 +296,11 @@ const Categories = () => {
                                                 color="success"
                                                 type="submit"
                                                 onClick={validateCustomStylesForm}
+                                                disabled={inputField.categorynameState === "invalid"}
                                             >
-                                                Create Category
+                                                {selectedCategory === 0 ?
+                                                    "Create Category" :
+                                                    "Update Category"}
                                             </Button>
                                         </Form>
                                     </CardBody>
