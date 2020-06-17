@@ -6,6 +6,8 @@ import { IStaff } from '../models/staff/staff';
 class StaffStore {
     @observable staffRegistry = new Map();
     @observable staffList : IStaff[] = [];
+    
+    @observable bookingSelectedStaff : number = 0;
 
     @observable loadingInitial = false;
     @observable submiting = false;
@@ -25,6 +27,10 @@ class StaffStore {
     }
     
 
+    @action setBookingSelectedStaff = (id: number) => {
+        this.bookingSelectedStaff = id;
+    }
+
     @action loadStaff = async () => {
         this.loadingInitial = true;
         this.staffList= [];
@@ -34,6 +40,9 @@ class StaffStore {
                 staff.forEach(staff => {
                     this.staffList.push(staff);
                 });
+
+                if (this.staffList.length > 0)
+                    this.bookingSelectedStaff = this.staffList[0].staffId;
 
                 this.loadingInitial = false;
             });

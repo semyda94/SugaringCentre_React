@@ -99,7 +99,7 @@ var adminRoutes: IFirstLayerRoute[] = [
     views: []
   },
   {
-    collapse: true,
+    collapse: false,
     path: "/bookings",
     name: "Bookings",
     miniName: "B",
@@ -107,25 +107,7 @@ var adminRoutes: IFirstLayerRoute[] = [
     component: Booking,
     layout: "/admin",
     state: "bookingCollapse",
-    views: [
-      {
-        collapse: false,
-        layout: "/admin",
-        path: "/bookings",
-        name: "Bookings",
-        miniName: "C",
-        component: Booking,
-        state: ""
-      },
-      {
-        collapse: false,
-        layout: "/admin",
-        path: "/bookings",
-        name: "New Booking",
-        miniName: "N",
-        component: Booking,
-        state: ""
-      }]
+    views: []
   }
 ];
 
