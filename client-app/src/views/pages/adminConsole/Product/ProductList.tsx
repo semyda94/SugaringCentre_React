@@ -30,12 +30,12 @@ const ProductList = () => {
 
     const handleNewProduct = () => {
         setModify(true);
-        setSelectedProduct(-1)
+        setSelectedProduct(0)
     }
 
-    const handleModifyProduct = (idx: number) => {
+    const handleModifyProduct = (id: number) => {
         setModify(true);
-        setSelectedProduct(idx);
+        setSelectedProduct(id);
     }
 
 

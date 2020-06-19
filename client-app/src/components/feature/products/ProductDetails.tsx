@@ -1,7 +1,8 @@
-import React, { useState, useContext, useEffect } from 'react'
+import React, { useState, useContext, useEffect, useRef } from 'react'
 import { observer } from 'mobx-react-lite';
 // react plugin that creates text editor
 import ReactQuill from "react-quill";
+import Editor from 'react-quill';
 // javascript plugin that creates nice dropzones for files
 import Dropzone from "dropzone";
 import Select from 'react-select';
@@ -24,12 +25,14 @@ import {
     ListGroupItem,
     ListGroup,
     Row,
-    Col
+    Col,
+    CardImg
 } from "reactstrap";
 
 import { IProductImage } from '../../../app/models/products/productImage';
 import { IProduct } from '../../../app/models/products/product';
 
+import noImage from '../../../assets/images/noimage.png'
 
 interface IProp {
     selectedProduct: number;
@@ -40,30 +43,84 @@ const ProductDetails: React.FC<IProp> = ({ selectedProduct }) => {
     const productStore = useContext(ProuctStore)
     const categoryStore = useContext(CategoryStore)
 
-    const { createProduct, updateProduct, productList } = productStore;
+    const { createProduct, updateProduct, productList, loadProductForDetails, productDetails, loadProductStat, productStat } = productStore;
     const { categoryOption } = categoryStore
 
-    const [title, setTitle] = useState("")
-    const [titleValidState, setTitleValidState] = useState("invalid")
-    const [price, setPrice] = useState("")
-    const [priceValidState, setPriceValidState] = useState("invalid")
-    const [desc, setDesc] = useState("")
-    const [descValidState, setDescValidState] = useState("invalid")
-    const [spec, setSpec] = useState("")
-    const [specValidState, setSpecValidState] = useState("invalid")
+    const [title, setTitle] = useState({ value: "", state: "invalid" })
+    const [price, setPrice] = useState({ value: "", state: "invalid" })
+    const [desc, setDesc] = useState({ value: "", state: "invalid" })
+    const [spec, setSpec] = useState({ value: "", state: "invalid" })
 
-    const [categories, setCategories] = useState("")
-    const [specCategoriesState, setCategoriesValidState] = useState("invalid")
+    const [previewImage, setPreviewImage] = useState(noImage);
+
+    const [categories, setCategories] = useState({ value: "", state: "invalid" })
+    const [selectedCategories, setSelectedCategories] = useState<{ value: number, label: string }[]>([])
 
     Dropzone.autoDiscover = false;
 
+    const descRef = useRef(null)
+
     useEffect(() => {
-        if (selectedProduct > -1) {
-            setTitleValidState("valid");
-            setPriceValidState("valid");
-            setDescValidState("valid");
-            setSpecValidState("valid");
+        if (selectedProduct > 0) {
+            loadProductForDetails(selectedProduct);
+            loadProductStat(selectedProduct);
+        } else {
+            setTitle({ value: "", state: "invalid" })
+            setPrice({ value: "", state: "invalid" })
+            setDesc({ value: "", state: "invalid" })
+            setSpec({ value: "", state: "invalid" })
+            setCategories({value: "", state: "invalid"})
+            setSelectedCategories([]);
+
+            setPreviewImage(noImage);
+
         }
+    }, [selectedProduct])
+
+    useEffect(() => {
+        setTitle({ value: productDetails?.title!, state: productDetails?.title === "" ? "invalid" : "valid" })
+        setPrice({ value: productDetails?.price.toString()!, state: productDetails?.price.toString() === "" ? "invalid" : "valid" })
+        setDesc({ value: productDetails?.shortDescription!, state: productDetails?.shortDescription === "" ? "invalid" : "valid" })
+        setSpec({ value: productDetails?.desc!, state: productDetails?.desc === "" ? "invalid" : "valid" })
+        setCategories({ value: productDetails?.categorySelected || '', state: productDetails?.categorySelected === "" ? "invalid" : "valid" })
+
+        if (productDetails?.categorySelected !== "") {
+            var categories = productDetails?.categorySelected.split(',');
+
+            var selectedOptions: { value: number, label: string }[] = [];
+
+            if (categories !== undefined) {
+                categories!.forEach(category => {
+                    categoryOption.forEach(opt => {
+                        if (opt.value === Number(category)) {
+                            selectedOptions.push(opt);
+                        }
+                    });
+
+                });
+            }
+
+            setSelectedCategories(selectedOptions);
+        }
+
+        productDetails?.productImages.forEach(image => {
+            Dropzone.instances[0].displayExistingFile({ name: "", size: image.image.length }, image.image);
+        });
+
+        if (productDetails?.productImages !== undefined && productDetails?.productImages.length > 0) {
+            setPreviewImage(productDetails?.productImages[0]!.image);
+        }
+
+
+    }, [productDetails])
+
+    useEffect(() => {
+        // if (selectedProduct > -1) {
+        //     setTitleValidState("valid");
+        //     setPriceValidState("valid");
+        //     setDescValidState("valid");
+        //     setSpecValidState("valid");
+        // }
 
         // this variable is to delete the previous image from the dropzone state
         // it is just to make the HTML DOM a bit better, and keep it light
@@ -82,6 +139,8 @@ const ProductDetails: React.FC<IProp> = ({ selectedProduct }) => {
             acceptedFiles: undefined,
             init: function () {
                 this.on("addedfile", function (file: any) {
+                    console.log(file);
+
                     if (currentMultipleFile) {
                     }
                     currentMultipleFile = file;
@@ -100,37 +159,35 @@ const ProductDetails: React.FC<IProp> = ({ selectedProduct }) => {
 
         switch (inputName) {
             case "title":
-                setTitle(newValue);
-                setTitleValidState(newState);
+                setTitle({ value: newValue, state: newState })
                 break;
             case "price":
-                setPrice(newValue);
-                setPriceValidState(newState);
+                setPrice({ value: newValue, state: newState })
                 break;
             case "desc":
-                setDesc(newValue);
-                setDescValidState(newState);
+                setDesc({ value: newValue, state: newState })
                 break;
             case "spec":
-                setSpec(newValue);
-                setSpecValidState(newState);
+                setSpec({ value: newValue, state: newState })
                 break;
             default:
                 break;
         }
+
     }
 
     const handleSelectChange = (e: any) => {
         // console.log(e);
-        
+
         let newCategories = ""
-        e.forEach((element:  any ) => {
-            newCategories +=  element.value + ",";
+        e.forEach((element: any) => {
+            newCategories += element.value + ",";
         });
 
-        
-        setCategories(newCategories);
-        setCategoriesValidState(newCategories === "" ? "invalid" : "valid")
+        setSelectedCategories(e);
+
+
+        setCategories({ value: newCategories, state: newCategories === "" ? "invalid" : "valid" });
     }
 
     const handleSubmit = () => {
@@ -140,23 +197,26 @@ const ProductDetails: React.FC<IProp> = ({ selectedProduct }) => {
             filesToUpload.push(
                 {
                     productImageId: 0,
-                    productId: selectedProduct === -1 ? 0 : selectedProduct,
+                    productId: selectedProduct === 0 ? 0 : selectedProduct,
                     image: image.dataURL!
                 })
-                return null;
+            return null;
         });
 
         const product: IProduct = {
-            productId: selectedProduct === -1 ? 0 : selectedProduct,
-            title: title,
-            price: Number(price),
-            desc: spec,
-            shortDescription: desc,
-            categorySelected: categories,
+            productId: selectedProduct === 0 ? 0 : selectedProduct,
+            title: title.value,
+            price: Number(price.value),
+            desc: spec.value,
+            shortDescription: desc.value,
+            categorySelected: categories.value,
             productImages: filesToUpload
         }
 
-        if (selectedProduct === -1)
+        console.log(product);
+        
+
+        if (selectedProduct === 0)
             createProduct(product);
         else
             updateProduct(product);
@@ -167,11 +227,11 @@ const ProductDetails: React.FC<IProp> = ({ selectedProduct }) => {
             <Row>
                 <Col className="order-xl-2" xl="4">
                     <Card className="card-profile">
-                        {/* <CardImg
+                        <CardImg
                             alt="..."
-                            src={require("./../../../assets/images/team-1-800x800.jpg")}
+                            src={previewImage}
                             top
-                        /> */}
+                        />
 
                         <CardHeader className="text-center border-0 pt-8 pt-md-4 pb-0 pb-md-4">
                             <div className="d-flex justify-content-between">
@@ -204,6 +264,7 @@ const ProductDetails: React.FC<IProp> = ({ selectedProduct }) => {
                                     flush
                                 >
                                     <ListGroupItem className=" px-0">
+
                                         <Row className=" align-items-center">
                                             <Col className=" col-auto">
                                                 <div className=" avatar">
@@ -240,7 +301,7 @@ const ProductDetails: React.FC<IProp> = ({ selectedProduct }) => {
 
                 </Col>
                 <Col className="order-xl-1" xl="8">
-                    <Row hidden={selectedProduct === -1}>
+                    <Row hidden={selectedProduct === 0}>
                         <Col lg="6">
                             <Card className="bg-gradient-success border-0">
                                 <CardBody>
@@ -253,7 +314,7 @@ const ProductDetails: React.FC<IProp> = ({ selectedProduct }) => {
                                                 Total Oders
                           </CardTitle>
                                             <span className="h2 font-weight-bold mb-0 text-white">
-                                                350,897
+                                                {productStat === undefined ? 0 : productStat.qty}
                           </span>
                                         </div>
                                         <Col className="col-auto">
@@ -274,7 +335,7 @@ const ProductDetails: React.FC<IProp> = ({ selectedProduct }) => {
                                                 Total Sold
                           </CardTitle>
                                             <span className="h2 font-weight-bold mb-0 text-white">
-                                                49,65%
+                                                ${productStat === undefined ? 0 : productStat.amount}
                           </span>
                                         </div>
                                         <Col className="col-auto">
@@ -287,7 +348,6 @@ const ProductDetails: React.FC<IProp> = ({ selectedProduct }) => {
                             </Card>
                         </Col>
                     </Row>
-
 
                     <Card>
                         <CardHeader>
@@ -313,12 +373,16 @@ const ProductDetails: React.FC<IProp> = ({ selectedProduct }) => {
                                                     Title
                             </label>
                                                 <Input
-                                                    defaultValue={selectedProduct === -1 ? "" : productList[selectedProduct]?.title}
+                                                    value={title.value}
                                                     id="input-title"
                                                     placeholder="Title"
                                                     type="text"
+                                                    valid={title.state === "valid"}
+                                                    invalid={title.state !== "valid"}
                                                     onChange={e => handleInputChange("title", e.target.value)}
                                                 />
+                                                <div className="invalid-feedback">Title shouldn't be empty</div>
+                                                <div className="valid-feedback">Looks good!</div>
                                             </FormGroup>
                                         </Col>
                                         <Col lg="6">
@@ -330,14 +394,18 @@ const ProductDetails: React.FC<IProp> = ({ selectedProduct }) => {
                                                     Price
                             </label>
                                                 <Input
-                                                    defaultValue={selectedProduct === -1 ? "" : productList[selectedProduct]?.price}
+                                                    value={price.value || ''}
                                                     id="input-price"
                                                     placeholder="Price"
                                                     type="number"
                                                     min={0}
                                                     step={0.01}
+                                                    valid={price.state === "valid"}
+                                                    invalid={price.state !== "valid"}
                                                     onChange={e => handleInputChange("price", e.target.value)}
                                                 />
+                                                <div className="invalid-feedback">Price shouldn't be empty</div>
+                                                <div className="valid-feedback">Looks good!</div>
                                             </FormGroup>
                                         </Col>
                                     </Row>
@@ -350,12 +418,15 @@ const ProductDetails: React.FC<IProp> = ({ selectedProduct }) => {
                                                 >
                                                     Categories
                                                 </label>
-                                                <Select 
-                                                    id="selectCategories" 
-                                                    placeholder="Select categories" 
-                                                    options={categoryOption} 
+                                                <Select
+                                                    value={selectedCategories}
+                                                    id="selectCategories"
+                                                    placeholder="Select categories"
+                                                    options={categoryOption}
                                                     onChange={e => handleSelectChange(e)}
-                                                    isMulti/>
+                                                    isMulti />
+                                                <div className="invalid-feedback">Select at least one category</div>
+                                                <div className="valid-feedback">Looks good!</div>
                                             </FormGroup>
                                         </Col>
                                     </Row>
@@ -374,8 +445,9 @@ const ProductDetails: React.FC<IProp> = ({ selectedProduct }) => {
                                                     data-toggle="quill"
                                                 />
                                                 <ReactQuill
+                                                    id="descEditer"
+                                                    ref={descRef}
                                                     onChange={e => handleInputChange("desc", e)}
-                                                    defaultValue={selectedProduct === -1 ? "" : productList[selectedProduct]?.shortDescription}
                                                     theme="snow"
                                                     modules={{
                                                         toolbar: [
@@ -410,7 +482,7 @@ const ProductDetails: React.FC<IProp> = ({ selectedProduct }) => {
                                                     data-toggle="quill"
                                                 />
                                                 <ReactQuill
-                                                    defaultValue={selectedProduct === -1 ? "" : productList[selectedProduct]?.desc}
+                                                    defaultValue={selectedProduct === 0 ? "" : productList[selectedProduct]?.desc}
                                                     onChange={e => handleInputChange("spec", e)}
                                                     theme="snow"
                                                     modules={{
@@ -441,10 +513,10 @@ const ProductDetails: React.FC<IProp> = ({ selectedProduct }) => {
                                                 type="submit"
                                                 disabled=
                                                 {
-                                                    titleValidState === "invalid" ||
-                                                    priceValidState === "invalid" ||
-                                                    descValidState === "invalid" ||
-                                                    specValidState === "invalid"
+                                                    title.state === "invalid" ||
+                                                    price.value === "invalid" ||
+                                                    desc.value === "invalid" ||
+                                                    spec.value === "invalid"
                                                 }
                                             >
                                                 Save

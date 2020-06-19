@@ -5,7 +5,6 @@ import ProductStore from './../../app/strore/productStores/productStore'
 
 // reactstrap components
 import {
-    Button,
     Card,
     CardHeader,
     CardFooter,
@@ -69,7 +68,7 @@ const ProductsTable: React.FC<IProp> = ({trigerEdit}) => {
                                         </DropdownToggle>
                                         <DropdownMenu className="dropdown-menu-arrow" right>
                                             <DropdownItem
-                                                onClick={() => { trigerEdit(idx) }}
+                                                onClick={() => { trigerEdit(product.productId) }}
                                             >
                                                 Edit
                                                     </DropdownItem>

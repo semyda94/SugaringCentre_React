@@ -2,6 +2,8 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Api.Application.Products;
 using Api.Domain;
+using API.Application.Classes;
+using API.Application.Products;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -12,6 +14,11 @@ namespace API.Controllers
         [HttpGet]
         public async Task<ActionResult<List<Product>>> List() {
             return await Mediator.Send(new List.Query());
+        }
+
+        [HttpGet("stat/{id}")]
+        public async Task<ActionResult<ProductStat>> Stat(int id) {
+            return await Mediator.Send(new State.Query {Id = id});
         }
 
         [HttpPost]

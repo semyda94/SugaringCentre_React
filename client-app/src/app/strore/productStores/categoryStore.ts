@@ -14,6 +14,7 @@ class CategoryStory {
     @action loadCategory = async () => {
         this.loadingInitial = true;
         this.categoryList = [];
+        this.categoryOption = [];
 
         try {
             const categories = await agent.Category.list();

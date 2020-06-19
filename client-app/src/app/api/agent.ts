@@ -7,6 +7,7 @@ import { IStaff } from './../models/staff/staff'
 import { ICategory } from './../models/products/category'
 import { IProduct } from './../models/products/product'
 import { IProductImage } from '../models/products/productImage';
+import { IProductStat } from '../models/products/productStat';
 import {IOrder} from '../models/orders/Order'
 import { IService } from '../models/services/service'
 import { IServiceCategory } from '../models/services/serviceCategory';
@@ -71,7 +72,8 @@ const Product = {
     list: () : Promise<IProduct[]> => request.get('/product'),
     create: (product: IProduct) => request.post(`/product`, product),
     update: (product: IProduct) => request.put(`/product/${product.productId}`, product),
-    delete: (id: number) => request.delete(`/product/${id}`)
+    delete: (id: number) => request.delete(`/product/${id}`),
+    stat: (id: number) : Promise<IProductStat> => request.get(`/product/stat/${id}`)
 }
 
 const Shop = {

@@ -31,6 +31,12 @@ namespace Api.Application.Products {
                 if (product == null)
                     throw new RestException(HttpStatusCode.NotFound);
 
+                var productCategories = await _context.ProductCategory
+                .Where(pc => pc.ProductId == request.Id)
+                .Select(pc => pc.CategoryId.ToString()).ToListAsync();
+
+                product.CategorySelected = string.Join(',', productCategories);
+
                 return product;
             }
         }

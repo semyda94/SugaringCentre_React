@@ -2,11 +2,13 @@ import { observable, action, runInAction } from 'mobx'
 import {createContext} from 'react'
 import agent from './../../api/agent'
 import { IProduct } from '../../models/products/product'
-import { IProductImage } from '../../models/products/productImage'
+// import { IProductImage } from '../../models/products/productImage'
+import { IProductStat } from '../../models/products/productStat'
 
 class ProductStore {
     @observable productList: IProduct[] = []
     @observable productDetails: IProduct | undefined = undefined;
+    @observable productStat: IProductStat | undefined = undefined;
     @observable productImages =  new Map();
     @observable sortedProductList: IProduct[] = []
     @observable loadingInitial = false;
@@ -93,7 +95,25 @@ class ProductStore {
         }
     }
 
-    
+    @action loadProductStat = async (id: number) => {
+        this.submiting = true;
+
+        try {
+            const stat = await agent.Product.stat(id);
+
+            runInAction('coninue getting stat', ()=> {
+                this.productStat = stat;
+                this.submiting = false;
+            })
+        } catch (error) {
+            console.log(error);
+
+            runInAction('Error of getting product stat', () => {
+                this.submiting = false;
+            })
+            
+        }
+    }
     
     @action loadImageForProduct = async (id: number) => {
         let image = ""
@@ -112,12 +132,12 @@ class ProductStore {
         }
     }
 
-    @action sortProducts() {
-        
-    }
+
     @action createProduct = async (product: IProduct) => {
         this.submiting = true;
 
+        console.log(product);
+        
         try {
             await agent.Product.create(product);
 
