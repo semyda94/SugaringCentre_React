@@ -53,7 +53,7 @@ const ServiceCategories = () => {
 
     const serviceCategoryStore = useContext(ServiceCategoryStore)
     // const { categoryList, loadCategory, deleteCategory, createCategory, editCategory } = serviceCategoryStore
-    const { serviceCategoryList, loadServiceCategory, deleteServiceCategory, createServiceCategory } = serviceCategoryStore
+    const { serviceCategoryList, loadServiceCategory, deleteServiceCategory, createServiceCategory, editServiceCategory } = serviceCategoryStore
 
     const [modifyMode, setModifyMode] = useState(false)
     const [selectedCategory, setSelectedCategory] = useState(0);
@@ -78,16 +78,10 @@ const ServiceCategories = () => {
     const customStylesForm = (e: React.ChangeEvent<HTMLInputElement>, stateName: string) => {
         switch (stateName) {
             case "category":
-                let newState = title;
-                newState.value = e.target.value;
-                newState.state = e.target.value === "" ? "invalid" : "valid"
-
-                setTitle(newState);
+                setTitle({value: e.target.value, state: e.target.value === "" ? "invalid" : "valid"});
                 break;
             case "description":
-                let newDescription = description;
-                newDescription.value = e.target.value;
-                newDescription.state = e.target.value === "" ? "invalid" : "valid"
+                setDescription({value: e.target.value, state: e.target.value === "" ? "invalid" : "valid"});
             default:
                 break;
         }
@@ -118,17 +112,17 @@ const ServiceCategories = () => {
         if (title.state === 'valid' && description.state === 'valid') {
             const category: IServiceCategory =
             {
-                serviceCategoryId: 0,
+                serviceCategoryId: selectedCategory,
                 title: title.value,
                 description: description.value
             }
 
 
-        // if (selectedCategory > 0) {
-        //     editCategory(category);
-        // } else {
+        if (selectedCategory > 0) {
+            editServiceCategory(category);
+        } else {
             createServiceCategory(category);
-        // }
+        }
 
             setModifyMode(false);
         }
@@ -136,21 +130,14 @@ const ServiceCategories = () => {
     }
 
     const handleEditCategory = (idx: number) => {
-        // if (!modifyMode) {
-        //     setModifyMode(true);
-        // }
+        if (!modifyMode) {
+            setModifyMode(true);
+        }
 
-        // let newState = inputField;
+        setTitle({value: serviceCategoryList[idx].title, state: serviceCategoryList[idx].title === "" ? "invalid" : "valid"})
+        setDescription({value: serviceCategoryList[idx].description, state: serviceCategoryList[idx].description === "" ? "invalid" : "valid"})
 
-        // newState.categoryname = categoryList[idx].name;
-        // if (newState.categoryname === "") {
-        //     newState.categorynameState = "invalid";
-        // } else {
-        //     newState.categorynameState = "valid";
-        // }
-
-        // setinputField(newState);
-        // setSelectedCategory(idx);
+        setSelectedCategory(serviceCategoryList[idx].serviceCategoryId)
     }
 
     return (
@@ -284,7 +271,10 @@ const ServiceCategories = () => {
                             <div className="card-wrapper">
                                 <Card>
                                     <CardHeader>
-                                        <h3 className="mb-0">New Category</h3>
+                                        {selectedCategory === 0 ?
+                                            <h3 className="mb-0">New Category</h3>:
+                                            <h3 className="mb-0">Update Categoru</h3>
+                                        }
                                     </CardHeader>
                                     <CardBody>
                                         <Row>
@@ -305,7 +295,7 @@ const ServiceCategories = () => {
                                                         Category Name
                           </label>
                                                     <Input
-                                                        defaultValue={title.value}
+                                                        value={title.value}
                                                         id="titleField"
                                                         placeholder="Category Name"
                                                         type="text"
@@ -320,6 +310,7 @@ const ServiceCategories = () => {
                                                             customStylesForm(e, "category")
                                                         }
                                                     />
+                                                    <div className="invalid-feedback">Category name shouldn't be empty</div>
                                                     <div className="valid-feedback">Looks good!</div>
                                                 </Col>
                                                 <Col className="mb-3" md="12">
@@ -330,7 +321,7 @@ const ServiceCategories = () => {
                                                         Description
                           </label>
                                                     <Input
-                                                        defaultValue={description.value}
+                                                        value={description.value}
                                                         id="descriptionField"
                                                         placeholder="Description"
                                                         type="text"
@@ -345,15 +336,24 @@ const ServiceCategories = () => {
                                                             customStylesForm(e, "description")
                                                         }
                                                     />
+                                                    <div className="invalid-feedback">Description name shouldn't be empty</div>
                                                     <div className="valid-feedback">Looks good!</div>
                                                 </Col>
                                             </div>
                                             <Button
                                                 color="success"
                                                 type="submit"
+                                                disabled={
+                                                    title.state === "invalid" ||
+                                                    description.state === "invalid"
+                                                }
                                                 onClick={validateCustomStylesForm}
                                             >
-                                                Create Category
+                                                {selectedCategory === 0 ?
+                                                    "Create Category" :
+                                                    "Update Category"
+                                                }
+                                                
                                             </Button>
                                         </Form>
                                     </CardBody>

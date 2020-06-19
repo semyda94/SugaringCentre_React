@@ -99,6 +99,7 @@ const Service = {
 const ServiceCategory = {
     list: (): Promise<IServiceCategory[]> => request.get('/servicecategory'),
     create: (category: IServiceCategory) => request.post('/servicecategory',category),
+    update: (category: IServiceCategory) => request.put(`/servicecategory/${category.serviceCategoryId}`,category),
     delete: (id: number) => request.delete(`/servicecategory/${id}`)
 }
 
