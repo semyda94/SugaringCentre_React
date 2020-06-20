@@ -112,6 +112,24 @@ class ServiceStore {
     }
   };
 
+  @action updateService = async (service: IService) => {
+    this.submiting = true;
+
+    try {
+      await agent.Service.update(service);
+
+      runInAction('Error update service', () => {
+        this.submiting = false;
+      })
+    } catch (error) {
+      console.log(error);
+      
+      runInAction('Error update service', () => {
+        this.submiting = false;
+      })
+    }
+  }
+
   @action deleteService = async (id: number) => {
     this.submiting = true;
 

@@ -93,6 +93,7 @@ const Service = {
     details: (id: number) : Promise<IService> => request.get(`/service/${id}`),
     masters: (id: number) : Promise<IStaff[]> => request.get(`/service/masters/${id}`),
     create: (service: IService) => request.post('/service', service),
+    update: (service: IService) => request.put(`/service/${service.serviceId}`, service),
     delete: (id: number) => request.delete(`/service/${id}`)
 }
 

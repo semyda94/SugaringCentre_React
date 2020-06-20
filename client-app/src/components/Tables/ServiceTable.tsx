@@ -45,7 +45,7 @@ import {
 import ServiceStore from './../../app/strore/serviceStores/serviceStore';
 
 interface IStaffTableProps {
-    modifyHook: React.Dispatch<React.SetStateAction<boolean>>
+    modifyHook: (id: number) => void
 }
 
 const ServiceTable: React.FC<IStaffTableProps> = ({modifyHook}) => {
@@ -111,9 +111,9 @@ const ServiceTable: React.FC<IStaffTableProps> = ({modifyHook}) => {
                                                 <DropdownMenu className="dropdown-menu-arrow" right>
                                                     <DropdownItem
                                                         href="#pablo"
-                                                        onClick={e => e.preventDefault()}
+                                                        onClick={e => modifyHook(service.serviceId)}
                                                     >
-                                                        View Details
+                                                        Edit
                                             </DropdownItem>
                                                     <DropdownItem
                                                         href="#pablo"
@@ -134,7 +134,7 @@ const ServiceTable: React.FC<IStaffTableProps> = ({modifyHook}) => {
                                         <Button
                                             color="success"
                                             type="button"
-                                            onClick={() => {modifyHook(true)}}>
+                                            onClick={() => {modifyHook(0)}}>
                                             New Service
                                     </Button>
                                 </Col>

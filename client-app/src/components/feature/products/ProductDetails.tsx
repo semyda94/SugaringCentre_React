@@ -2,7 +2,6 @@ import React, { useState, useContext, useEffect, useRef } from 'react'
 import { observer } from 'mobx-react-lite';
 // react plugin that creates text editor
 import ReactQuill from "react-quill";
-import Editor from 'react-quill';
 // javascript plugin that creates nice dropzones for files
 import Dropzone from "dropzone";
 import Select from 'react-select';

@@ -22,6 +22,11 @@ namespace API.Controllers {
             return await Mediator.Send(new Api.Application.Services.Details.Query{Id = id});
         }
 
+        [HttpPut ("{id}")]
+        public async Task<ActionResult<Unit>> Edit (int id, API.Application.Services.Edit.Command command) {
+            return await Mediator.Send(command);
+        }
+
         [HttpGet ("masters/{id}")]
         public async Task<ActionResult<List<Staff>>> Masters (int id) {
             return await Mediator.Send(new Api.Application.Services.Masters.Query{serviceId = id});

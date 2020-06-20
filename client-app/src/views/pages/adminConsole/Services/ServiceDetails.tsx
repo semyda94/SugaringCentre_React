@@ -28,8 +28,11 @@ import {
     ListGroupItem,
     ListGroup,
     Row,
-    Col
+    Col,
+    CardImg
 } from "reactstrap";
+
+import noImage from './../../../../assets/images/noimage.png'
 
 
 interface IServiceDetailsProps {
@@ -42,10 +45,52 @@ const ServiceDetails: React.FC<IServiceDetailsProps> = ({ selectedService, modif
 
     const serviceStore = useContext(ServiceStore);
     const serviceCategoryStore = useContext(ServiceCategoryStore);
-    const { serviceList, createService } = serviceStore;
+    const { createService, loadServiceDetails, serviceDetails, updateService } = serviceStore;
     const { categoryOption, loadServiceCategory } = serviceCategoryStore
 
+    const [title, setTitle] = useState({ value: "", state: "invalid" })
+    const [price, setPrice] = useState({ value: "", state: "invalid" })
+    const [category, setCategory] = useState({ value: "", state: "invalid" })
+    const [selectedCategory, setSelectedCategory] = useState<{ value: number, label: string }>();
+    const [duration, setDuration] = useState({ value: "", state: "invalid" })
+    const [desc, setDesc] = useState({ value: "", state: "invalid" })
+
+    const [previewImage, setPreviewImage] = useState(noImage);
+
     Dropzone.autoDiscover = false;
+
+    useEffect(() => {
+        if (selectedService > 0) {
+            loadServiceDetails(selectedService);
+        } else {
+            setTitle({value: "", state: "invalid"})
+            setPrice({value: "", state: "invalid"})
+            setDuration({value: "", state: "invalid"})
+            setCategory({value: "", state: "invalid"})
+            setSelectedCategory(undefined);
+            setDesc({value: "", state: "invalid"})
+
+            setPreviewImage(noImage);
+        }
+    }, [selectedService])
+
+    useEffect(() => {
+        if (serviceDetails !== undefined) {
+            setTitle({value: serviceDetails.title, state: serviceDetails.title === "" ? "invalid" : "valid"})
+            setPrice({value: serviceDetails.price.toString(), state: serviceDetails.price.toString() === "" ? "invalid" : "valid"})
+            setDuration({value: serviceDetails.duration.toString(), state: serviceDetails.duration.toString() === "" ? "invalid" : "valid"})
+            setDesc({value: serviceDetails.duration.toString(), state: serviceDetails.duration.toString() === "" ? "invalid" : "valid"})
+            setDesc({value: serviceDetails.serviceCategoryId.toString(), state: serviceDetails.serviceCategoryId.toString() === "" ? "invalid" : "valid"})
+
+            setPreviewImage(serviceDetails.image);
+            categoryOption.forEach(opt => {
+                if (opt.value === Number(serviceDetails.serviceCategoryId)) {
+                    setSelectedCategory({value: opt.value, label: opt.label});
+                }
+            });
+        }
+
+    }, [serviceDetails])
 
     useEffect(() => {
         loadServiceCategory();
@@ -76,11 +121,6 @@ const ServiceDetails: React.FC<IServiceDetailsProps> = ({ selectedService, modif
         document.getElementsByClassName("dz-preview-multiple")[0].innerHTML = "";
     }, [loadServiceCategory])
 
-    const [title, setTitle] = useState({ value: "", state: "invalid" })
-    const [price, setPrice] = useState({ value: "", state: "invalid" })
-    const [category, setCategory] = useState({ value: "", state: "invalid" })
-    const [duration, setDuration] = useState({ value: "", state: "invalid" })
-    const [desc, setDesc] = useState({ value: "", state: "invalid" })
 
     const handleInputChange = (inputName: string, newValue: string) => {
 
@@ -111,18 +151,19 @@ const ServiceDetails: React.FC<IServiceDetailsProps> = ({ selectedService, modif
         let newCategories = e.value
 
         setCategory({ value: newCategories, state: newCategories === "" ? "invalid" : "valid" });
+        setSelectedCategory(e);
     }
 
     const handleSubmit = () => {
         let fileToUpload: string = ""
         console.log(Dropzone.instances[0].getUploadingFiles());
-        
+
         if (Dropzone.instances[0].getUploadingFiles().length !== 0) {
             fileToUpload = Dropzone.instances[0].getUploadingFiles()[0].dataURL!;
         }
 
         const service: IService = {
-            serviceId: selectedService === -1 ? 0 : selectedService,
+            serviceId: selectedService,
             serviceCategoryId: Number(category.value),
             title: title.value,
             desc: desc.value,
@@ -131,10 +172,10 @@ const ServiceDetails: React.FC<IServiceDetailsProps> = ({ selectedService, modif
             image: fileToUpload
         };
 
-        if (selectedService === -1)
-        createService(service);
-        // else
-        //     updateProduct(product);
+        if (selectedService === 0)
+            createService(service);
+        else
+            updateService(service);
 
         modifyHook(false);
     }
@@ -144,11 +185,11 @@ const ServiceDetails: React.FC<IServiceDetailsProps> = ({ selectedService, modif
             <Row>
                 <Col className="order-xl-2" xl="4">
                     <Card className="card-profile">
-                        {/* <CardImg
+                        <CardImg
                             alt="..."
-                            src={require("./../../../assets/images/team-1-800x800.jpg")}
+                            src={previewImage}
                             top
-                        /> */}
+                        />
 
                         <CardHeader className="text-center border-0 pt-8 pt-md-4 pb-0 pb-md-4">
                             <div className="d-flex justify-content-between">
@@ -217,7 +258,7 @@ const ServiceDetails: React.FC<IServiceDetailsProps> = ({ selectedService, modif
 
                 </Col>
                 <Col className="order-xl-1" xl="8">
-                    <Row hidden={selectedService === -1}>
+                    <Row hidden={selectedService === 0}>
                         <Col lg="6">
                             <Card className="bg-gradient-success border-0">
                                 <CardBody>
@@ -227,7 +268,7 @@ const ServiceDetails: React.FC<IServiceDetailsProps> = ({ selectedService, modif
                                                 className="text-uppercase text-muted mb-0 text-white"
                                                 tag="h5"
                                             >
-                                                Total Oders
+                                                Total Bookings
                           </CardTitle>
                                             <span className="h2 font-weight-bold mb-0 text-white">
                                                 350,897
@@ -248,10 +289,10 @@ const ServiceDetails: React.FC<IServiceDetailsProps> = ({ selectedService, modif
                                     <Row>
                                         <div className="col">
                                             <CardTitle className="text-uppercase text-muted mb-0 text-white">
-                                                Total Sold
+                                                Total Amount
                           </CardTitle>
                                             <span className="h2 font-weight-bold mb-0 text-white">
-                                                49,65%
+                                                $
                           </span>
                                         </div>
                                         <Col className="col-auto">
@@ -290,12 +331,16 @@ const ServiceDetails: React.FC<IServiceDetailsProps> = ({ selectedService, modif
                                                     Title
                             </label>
                                                 <Input
-                                                    defaultValue={selectedService === -1 ? "" : serviceList[selectedService]?.title}
+                                                    value={title.value}
                                                     id="input-title"
                                                     placeholder="Title"
                                                     type="text"
                                                     onChange={e => handleInputChange("title", e.target.value)}
+                                                    valid={title.state !== "invalid"}
+                                                    invalid={title.state === "invalid"}
                                                 />
+                                                <div className="invalid-feedback">Title shouldn't be empty</div>
+                                                <div className="valid-feedback">Looks good!</div>
                                             </FormGroup>
                                         </Col>
                                         <Col lg="6">
@@ -307,14 +352,18 @@ const ServiceDetails: React.FC<IServiceDetailsProps> = ({ selectedService, modif
                                                     Price (NZD)
                             </label>
                                                 <Input
-                                                    defaultValue={selectedService === -1 ? "" : serviceList[selectedService]?.price}
+                                                    value={price.value}
                                                     id="input-price"
                                                     placeholder="Price"
                                                     type="number"
                                                     min={0}
                                                     step={0.01}
                                                     onChange={e => handleInputChange("price", e.target.value)}
+                                                    valid={price.state !== "invalid"}
+                                                    invalid={price.state === "invalid"}
                                                 />
+                                                <div className="invalid-feedback">Price should be larger than 0</div>
+                                                <div className="valid-feedback">Looks good!</div>
                                             </FormGroup>
                                         </Col>
                                     </Row>
@@ -328,6 +377,7 @@ const ServiceDetails: React.FC<IServiceDetailsProps> = ({ selectedService, modif
                                                     Category
                                                 </label>
                                                 <Select
+                                                    value={selectedCategory}
                                                     id="selectCategory"
                                                     placeholder="Select category"
                                                     options={categoryOption}
@@ -343,14 +393,18 @@ const ServiceDetails: React.FC<IServiceDetailsProps> = ({ selectedService, modif
                                                     Duration (Min)
                             </label>
                                                 <Input
-                                                    defaultValue={selectedService === -1 ? "" : serviceList[selectedService]?.duration}
+                                                    value={duration.value}
                                                     id="input-duration"
                                                     placeholder="Duration"
                                                     type="number"
                                                     min={0}
                                                     step={1}
                                                     onChange={e => handleInputChange("duration", e.target.value)}
+                                                    valid={duration.state !== "invalid"}
+                                                    invalid={duration.state === "invalid"}
                                                 />
+                                                <div className="invalid-feedback">Duration should be larger than 0</div>
+                                                <div className="valid-feedback">Looks good!</div>
                                             </FormGroup>
                                         </Col>
                                     </Row>
@@ -370,7 +424,7 @@ const ServiceDetails: React.FC<IServiceDetailsProps> = ({ selectedService, modif
                                                 />
                                                 <ReactQuill
                                                     onChange={e => handleInputChange("desc", e)}
-                                                    // defaultValue={selectedService === -1 ? "" : serviceList[selectedService]?.shortDescription}
+                                                    // defaultValue={selectedService === 0 ? "" : serviceList[selectedService]?.shortDescription}
                                                     theme="snow"
                                                     modules={{
                                                         toolbar: [

@@ -31,20 +31,26 @@ const ServiceList = () => {
     const {loadServices} = serviceStore;
 
     const [modify, setModify] = useState(false)
-    const [selectedService, setselectedService] = useState(-1)
+    const [selectedService, setselectedService] = useState(0)
+
+    const handleSetModifyForService = (id: number) => {
+        setModify(true);
+        setselectedService(id);
+    }
 
     useEffect(() => {
         loadServices();
     }, [loadServices])
+
     return (
         <>
             <>
-                <ProductCategoriesHeader name="Service List" parentName="Service" action={() => {setModify(true)}} />
+                <ProductCategoriesHeader name="Service List" parentName="Service" action={() => {handleSetModifyForService(0)}} />
 
                 <Container className="mt--6" fluid hidden={modify}>
                     <Row>
                         <Col>
-                            <ServiceTable modifyHook={setModify} />
+                            <ServiceTable modifyHook={handleSetModifyForService} />
                         </Col>
                     </Row>
                 </Container>

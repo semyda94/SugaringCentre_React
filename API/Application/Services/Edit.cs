@@ -1,11 +1,12 @@
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
-using Api.Domain;
-using MediatR;
+using Api.Application.Errors;
 using Api.Persistence;
+using MediatR;
 
-namespace Api.Application.Services {
-    public class Create {
+namespace API.Application.Services {
+    public class Edit {
         public class Command : IRequest<Unit> {
             public int ServiceId { get; set; }
             public int ServiceCategoryId { get; set; }
@@ -23,23 +24,26 @@ namespace Api.Application.Services {
             }
 
             public async Task<Unit> Handle (Command request, CancellationToken cancellationToken) {
-                var newService = new Service {
-                    ServiceCategoryId = request.ServiceCategoryId,
-                    Title = request.Title,
-                    Desc = request.Desc,
-                    Duration = request.Duration,
-                    Price = request.Price,
-                    Image = request.Image
-                };
+                var service = await _context.Services.FindAsync(request.ServiceId);
 
-                _context.Services.Add(newService);
+                if (service == null) {
+                    throw new RestException(HttpStatusCode.NotFound);
+                }
+
+                service.Title = request.Title;
+                service.Desc = request.Desc;
+                service.Duration = request.Duration;
+                service.Price = request.Price;
+
+                if (request.Image != null)
+                    service.Image = request.Image;
 
                 var success = await _context.SaveChangesAsync() > 0;
 
                 if (success)
                     return Unit.Value;
 
-                throw new System.Exception("Error during saving a new Service");
+                throw new System.Exception("Error during updating service");
             }
         }
     }
