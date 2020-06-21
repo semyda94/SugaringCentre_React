@@ -135,8 +135,6 @@ class ProductStore {
 
     @action createProduct = async (product: IProduct) => {
         this.submiting = true;
-
-        console.log(product);
         
         try {
             await agent.Product.create(product);

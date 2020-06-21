@@ -75,7 +75,6 @@ const Cart = () => {
 
     if (loaded) {
       setTimeout(() => {
-        console.log("loaded");
         window.paypal
           .Buttons({
             intent: "authorize",

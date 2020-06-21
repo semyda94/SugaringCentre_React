@@ -138,7 +138,6 @@ const ProductDetails: React.FC<IProp> = ({ selectedProduct }) => {
             acceptedFiles: undefined,
             init: function () {
                 this.on("addedfile", function (file: any) {
-                    console.log(file);
 
                     if (currentMultipleFile) {
                     }
@@ -176,7 +175,6 @@ const ProductDetails: React.FC<IProp> = ({ selectedProduct }) => {
     }
 
     const handleSelectChange = (e: any) => {
-        // console.log(e);
 
         let newCategories = ""
         e.forEach((element: any) => {

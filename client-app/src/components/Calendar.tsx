@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { observer } from "mobx-react-lite";
 import classnames from "classnames";
 // JavaScript library that creates a callendar with events
@@ -30,6 +30,8 @@ import {
 //Stores
 import StaffStore from './../app/strore/staffStore';
 import ServiceStore from './../app/strore/serviceStores/serviceStore';
+import BookingStore from './../app/strore/bookingStore';
+import moment from "moment";
 
 interface ICalendarForStaffPoprs {
     id: number;
@@ -41,9 +43,11 @@ const BookingCalendar: React.FC<ICalendarForStaffPoprs> = ({ id }) => {
 
     const staffStore = useContext(StaffStore);
     const serviceStore = useContext(ServiceStore);
-    
-    const {loadTimeOptionsForDate, timeOptions} = staffStore
+    const bookingStore = useContext(BookingStore);
+
+    const { loadTimeOptionsForDate, timeOptions } = staffStore
     const { loadServiceOptions, serviceOptions } = serviceStore;
+    const { loadForStaff, listForStaff, createBooking } = bookingStore;
 
     const [alert, setalert] = useState<any>(null);
     const [currentDate, setcurrentDate] = useState("");
@@ -55,11 +59,11 @@ const BookingCalendar: React.FC<ICalendarForStaffPoprs> = ({ id }) => {
 
     const [service, setService] = useState(0);
     const [date, setDate] = useState(new Date());
-    const [time, setTime] = useState({value: "", state: "invalid"})
-    const [firstname, setFirstName] = useState({value: "", state: "invalid"})
-    const [lastName, setLastName] = useState({value: "", state: "invalid"})
-    const [email, setEmail] = useState({value: "", state: "invalid"})
-    const [phone, setPhone] = useState({value: "", state: "invalid"})
+    const [time, setTime] = useState({ value: "", state: "invalid" })
+    const [firstname, setFirstName] = useState({ value: "", state: "invalid" })
+    const [lastName, setLastName] = useState({ value: "", state: "invalid" })
+    const [email, setEmail] = useState({ value: "", state: "invalid" })
+    const [phone, setPhone] = useState({ value: "", state: "invalid" })
 
 
     const [event, setevent] = useState<any>();
@@ -67,167 +71,72 @@ const BookingCalendar: React.FC<ICalendarForStaffPoprs> = ({ id }) => {
     const [eventTitle, seteventTitle] = useState("");
     const [eventDescription, setEventDescription] = useState("");
 
-    // const changeView = (newView: any) => {
-    //     calendar.changeView(newView);
-    //     setcurrentDate(calendar.view.title);
-    //   };
+    const [events, setevents] = useState<{
+        id: number;
+        title: string;
+        start: Date;
+        allDay: boolean;
+        className: string;
+        description: string;
+    }[]>([]);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            const bookings = await loadForStaff(id);
+        }
+
+        fetchData();
+    }, []);
+
+    useEffect(() => {
+
+        var newEventsList: {
+            id: number;
+            title: string;
+            start: Date;
+            allDay: boolean;
+            className: string;
+            description: string;
+        }[] = [];
+        
+        listForStaff.map((booking, idx) => {
+            var startDate = new Date(booking.date);
+            var time = moment(booking.time, "hh:mm a").toDate();
+
+            startDate.setHours(time.getHours(), time.getMinutes());
+
+            newEventsList.push({
+                id: booking.bookingId,
+                title: booking.firstName + ' ' + booking.lastName,
+                start: startDate,
+                allDay: false,
+                className: "bg-red",
+                description:
+                    "TestDescription"
+            })
+        })
+
+        setevents(newEventsList);
+
+    }, [listForStaff])
 
     const calendarRef = React.createRef<FullCalendar>();
     const calendarApi = calendarRef.current?.getApi();
 
-
-    var today = new Date();
-    var y = today.getFullYear();
-    var m = today.getMonth();
-    var d = today.getDate();
-
-    const [events, setevents] = useState([
-        {
-            id: 1,
-            title: "Call with Dave",
-            start: new Date(y, m, 1),
-            allDay: false,
-            className: "bg-red",
-            description:
-                "Nullam id dolor id nibh ultricies vehicula ut id elit. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus."
-        },
-
-        {
-            id: 2,
-            title: "Lunch meeting",
-            start: new Date(y, m, d - 1, 10, 30),
-            allDay: true,
-            className: "bg-orange",
-            description:
-                "Nullam id dolor id nibh ultricies vehicula ut id elit. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus."
-        },
-
-        {
-            id: 3,
-            title: "All day conference",
-            start: new Date(y, m, d + 7, 12, 0),
-            allDay: true,
-            className: "bg-green",
-            description:
-                "Nullam id dolor id nibh ultricies vehicula ut id elit. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus."
-        },
-
-        {
-            id: 4,
-            title: "Meeting with Mary",
-            start: new Date(y, m, d - 2),
-            allDay: true,
-            className: "bg-blue",
-            description:
-                "Nullam id dolor id nibh ultricies vehicula ut id elit. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus."
-        },
-
-        {
-            id: 5,
-            title: "Winter Hackaton",
-            start: new Date(y, m, d + 1, 19, 0),
-            allDay: true,
-            className: "bg-red",
-            description:
-                "Nullam id dolor id nibh ultricies vehicula ut id elit. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus."
-        },
-
-        {
-            id: 6,
-            title: "Digital event",
-            start: new Date(y, m, 21),
-            allDay: true,
-            className: "bg-warning",
-            description:
-                "Nullam id dolor id nibh ultricies vehicula ut id elit. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus."
-        },
-
-        {
-            id: 7,
-            title: "Marketing event",
-            start: new Date(y, m, 21),
-            allDay: true,
-            className: "bg-purple",
-            description:
-                "Nullam id dolor id nibh ultricies vehicula ut id elit. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus."
-        },
-
-        {
-            id: 8,
-            title: "Dinner with Family",
-            start: new Date(y, m, 19),
-            allDay: true,
-            className: "bg-red",
-            description:
-                "Nullam id dolor id nibh ultricies vehicula ut id elit. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus."
-        },
-
-        {
-            id: 9,
-            title: "Black Friday",
-            start: new Date(y, m, 23),
-            allDay: true,
-            className: "bg-blue",
-            description:
-                "Nullam id dolor id nibh ultricies vehicula ut id elit. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus."
-        },
-
-        {
-            id: 10,
-            title: "Cyber Week",
-            start: new Date(y, m, 2),
-            allDay: true,
-            className: "bg-yellow",
-            description:
-                "Nullam id dolor id nibh ultricies vehicula ut id elit. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus."
-        }
-    ]);
-
     const addNewEvent = () => {
-        const newEvents = events;
-        // calendarApi?.addEvent({
-        //     title: firstname.value + ' ' + lastName.value,
-        //     start: date,
-        //     allDay: true,
-        //     classnames: radios,
-        //     id: events[events.length - 1].id + 1
-        // })
+        createBooking({
+            bookingId: 0,
+            serviceId: service,
+            staffId: id,
+            date: date,
+            time: time.value,
+            firstName: firstname.value,
+            lastName: lastName.value,
+            email: email.value,
+            phone: phone.value
+        });
 
         setmodalAdd(false);
-        newEvents.push({
-            title: firstname.value + ' ' + lastName.value,
-            start: date,
-            allDay: false,
-            className: radios,
-            description: "",
-            id: events[events.length - 1].id + 1
-        })
-
-
-        setevents(newEvents);
-        // var newEvents = this.state.events;
-        // newEvents.push({
-        //   title: this.state.eventTitle,
-        //   start: this.state.startDate,
-        //   end: this.state.endDate,
-        //   className: this.state.radios,
-        //   id: this.state.events[this.state.events.length - 1] + 1
-        // });
-        // calendar.addEvent({
-        //   title: this.state.eventTitle,
-        //   start: this.state.startDate,
-        //   end: this.state.endDate,
-        //   className: this.state.radios,
-        //   id: this.state.events[this.state.events.length - 1] + 1
-        // });
-        // this.setState({
-        //   modalAdd: false,
-        //   events: newEvents,
-        //   startDate: undefined,
-        //   endDate: undefined,
-        //   radios: "bg-info",
-        //   eventTitle: undefined
-        // });
     };
 
 
@@ -269,27 +178,31 @@ const BookingCalendar: React.FC<ICalendarForStaffPoprs> = ({ id }) => {
     const handleSelectService = async (selection: any) => {
         loadTimeOptionsForDate(id, selection.value, date);
         setService(selection.value);
+    }
+
+    const handleSelectTime = (selection: any) => {
+        setTime({ value: selection.label, state: "" });
       }
 
-      const handleInputChanged = (e: React.ChangeEvent<HTMLInputElement>, stateName: string) => {
-        
+    const handleInputChanged = (e: React.ChangeEvent<HTMLInputElement>, stateName: string) => {
+
         switch (stateName) {
-          case "phone":
-            setPhone({value: e.target.value, state: e.target.value === "" ? "invalid" : "valid"});
-            break;
-          case "email":
-            setEmail({value: e.target.value, state: e.target.value === "" ? "invalid" : "valid"});
-            break;
-          case "firstname":
-            setFirstName({value: e.target.value, state: e.target.value === "" ? "invalid" : "valid"});
-            break;
-          case "lastname":
-            setLastName({value: e.target.value, state: e.target.value === "" ? "invalid" : "valid"});
-            break;
-          default:
-            break;
+            case "phone":
+                setPhone({ value: e.target.value, state: e.target.value === "" ? "invalid" : "valid" });
+                break;
+            case "email":
+                setEmail({ value: e.target.value, state: e.target.value === "" ? "invalid" : "valid" });
+                break;
+            case "firstname":
+                setFirstName({ value: e.target.value, state: e.target.value === "" ? "invalid" : "valid" });
+                break;
+            case "lastname":
+                setLastName({ value: e.target.value, state: e.target.value === "" ? "invalid" : "valid" });
+                break;
+            default:
+                break;
         }
-      };
+    };
 
     return (
         <div>
@@ -325,7 +238,7 @@ const BookingCalendar: React.FC<ICalendarForStaffPoprs> = ({ id }) => {
                         />
                     </CardBody>
                 </Card>
-                
+
                 <Modal
                     isOpen={modalAdd}
                     toggle={() => setmodalAdd(false)}
@@ -427,73 +340,73 @@ const BookingCalendar: React.FC<ICalendarForStaffPoprs> = ({ id }) => {
                                     id="input-time"
                                     placeholder="Select time"
                                     options={timeOptions}
-                                    // onChange={e => handleSelectTime(e)}
+                                    onChange={e => handleSelectTime(e)}
                                 />
                             </FormGroup>
 
                             <FormGroup>
-                    <label
-                      className="form-control-label"
-                      htmlFor="input-first-name"
-                    >
-                      First Name*
+                                <label
+                                    className="form-control-label"
+                                    htmlFor="input-first-name"
+                                >
+                                    First Name*
                             </label>
-                    <Input
-                      className="form-control-alternative"
-                      id="input-first-name"
-                      placeholder="First Name"
-                      type="text"
-                      onChange={e => handleInputChanged(e, "firstname")}
-                    />
-                  </FormGroup>
+                                <Input
+                                    className="form-control-alternative"
+                                    id="input-first-name"
+                                    placeholder="First Name"
+                                    type="text"
+                                    onChange={e => handleInputChanged(e, "firstname")}
+                                />
+                            </FormGroup>
 
-                  <FormGroup>
-                    <label
-                      className="form-control-label"
-                      htmlFor="input-last-name"
-                    >
-                      Last Name*
+                            <FormGroup>
+                                <label
+                                    className="form-control-label"
+                                    htmlFor="input-last-name"
+                                >
+                                    Last Name*
                             </label>
-                    <Input
-                      className="form-control-alternative"
-                      id="input-last-name"
-                      placeholder="Last Name"
-                      type="text"
-                      onChange={e => handleInputChanged(e, "lastname")}
-                    />
-                  </FormGroup>
+                                <Input
+                                    className="form-control-alternative"
+                                    id="input-last-name"
+                                    placeholder="Last Name"
+                                    type="text"
+                                    onChange={e => handleInputChanged(e, "lastname")}
+                                />
+                            </FormGroup>
 
-                  <FormGroup>
-                    <label
-                      className="form-control-label"
-                      htmlFor="input-email"
-                    >
-                      Email*
+                            <FormGroup>
+                                <label
+                                    className="form-control-label"
+                                    htmlFor="input-email"
+                                >
+                                    Email*
                             </label>
-                    <Input
-                      className="form-control-alternative"
-                      id="input-email"
-                      placeholder="Email"
-                      type="email"
-                      onChange={e => handleInputChanged(e, "email")}
-                    />
-                  </FormGroup>
+                                <Input
+                                    className="form-control-alternative"
+                                    id="input-email"
+                                    placeholder="Email"
+                                    type="email"
+                                    onChange={e => handleInputChanged(e, "email")}
+                                />
+                            </FormGroup>
 
-                  <FormGroup>
-                    <label
-                      className="form-control-label"
-                      htmlFor="input-country"
-                    >
-                      Phone*
+                            <FormGroup>
+                                <label
+                                    className="form-control-label"
+                                    htmlFor="input-country"
+                                >
+                                    Phone*
                             </label>
-                    <Input
-                      className="form-control-alternative"
-                      id="input-phone"
-                      placeholder="Phone"
-                      type="tel"
-                      onChange={e => handleInputChanged(e, "phone")}
-                    />
-                  </FormGroup>
+                                <Input
+                                    className="form-control-alternative"
+                                    id="input-phone"
+                                    placeholder="Phone"
+                                    type="tel"
+                                    onChange={e => handleInputChanged(e, "phone")}
+                                />
+                            </FormGroup>
                         </form>
                     </div>
                     <div className="modal-footer">

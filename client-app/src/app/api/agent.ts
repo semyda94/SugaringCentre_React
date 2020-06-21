@@ -45,10 +45,10 @@ const sleep = (ms: number) => (response: AxiosResponse) =>
 new Promise<AxiosResponse>(resolve => setTimeout(() => resolve(response), ms));
 
 const request = {
-    get: (url: string) => axios.get(url).then(sleep(1)).then(responseBody),
-    post:(url: string, body: {}) => axios.post(url, body).then(sleep(1)).then(responseBody),
-    put: (url: string, body: {}) => axios.put(url, body).then(sleep(1)).then(responseBody),
-    delete: (url: string) => axios.delete(url).then(sleep(1)).then(responseBody)
+    get: (url: string) => axios.get(url).then(responseBody),
+    post:(url: string, body: {}) => axios.post(url, body).then(responseBody),
+    put: (url: string, body: {}) => axios.put(url, body).then(responseBody),
+    delete: (url: string) => axios.delete(url).then(responseBody)
 }
 
 const Staff = {
@@ -105,7 +105,8 @@ const ServiceCategory = {
 }
 
 const Booking = {
-    create: (booking: IBooking) => request.post('/bookings', booking)
+    create: (booking: IBooking) => request.post('/bookings', booking),
+    forStaff: (id : number) => request.get(`/bookings/listforstaff/${id}`)
 }
 
 export default  { Staff, Category, Product, Shop, Order, Service, ServiceCategory, Booking }

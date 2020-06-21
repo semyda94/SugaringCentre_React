@@ -52,7 +52,6 @@ export const Sidebar: React.FC<IProps> = ({ routes, logo, sidenavOpen, toggleSid
     //TODO: Fix location retrive
     // verifies if routeName is the one active (in browser input)
     const activeRoute = (routeName: string) => {
-        console.log(history.location.pathname + '  |  ' + routeName)
         return window.location.pathname.indexOf(routeName) > -1 ? "active" : "";
     };
 
