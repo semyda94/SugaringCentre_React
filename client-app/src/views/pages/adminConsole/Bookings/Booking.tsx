@@ -14,12 +14,17 @@ import {
 } from "reactstrap";
 
 import StaffStore from './../../../../app/strore/staffStore';
+import BookingStore from './../../../../app/strore/bookingStore';
+
 import BookingCalendar from './../../../../components/Calendar';
 
 const Booking = () => {
 
-    const staffStore = useContext(StaffStore)
+    const staffStore = useContext(StaffStore);
+    const bookingStore = useContext(BookingStore);
+
     const { loadStaff, staffList, bookingSelectedStaff, setBookingSelectedStaff } = staffStore;
+    const { loadBookings } = bookingStore;
 
     const [tab, setTab] = useState(1)
 
@@ -29,7 +34,8 @@ const Booking = () => {
 
     useEffect(() => {
         loadStaff();
-    }, [loadStaff])
+        loadBookings();
+    }, [loadStaff, loadBookings])
 
     return (
         <>

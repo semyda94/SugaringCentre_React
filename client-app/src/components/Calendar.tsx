@@ -47,17 +47,19 @@ const BookingCalendar: React.FC<ICalendarForStaffPoprs> = ({ id }) => {
 
     const { loadTimeOptionsForDate, timeOptions } = staffStore
     const { loadServiceOptions, serviceOptions } = serviceStore;
-    const { loadForStaff, listForStaff, createBooking } = bookingStore;
+    const { bookingList, selectedBooking, loadBooking, createBooking, editBooking } = bookingStore;
 
     const [alert, setalert] = useState<any>(null);
-    const [currentDate, setcurrentDate] = useState("");
 
     const [modalAdd, setmodalAdd] = useState(false);
     const [modalChange, setmodalChange] = useState(false);
     const [radios, setradios] = useState("bg-info");
 
 
-    const [service, setService] = useState(0);
+    const [service, setService] = useState<{
+        value: number;
+        label: string;
+    } | undefined>(undefined);
     const [date, setDate] = useState(new Date());
     const [time, setTime] = useState({ value: "", state: "invalid" })
     const [firstname, setFirstName] = useState({ value: "", state: "invalid" })
@@ -65,11 +67,6 @@ const BookingCalendar: React.FC<ICalendarForStaffPoprs> = ({ id }) => {
     const [email, setEmail] = useState({ value: "", state: "invalid" })
     const [phone, setPhone] = useState({ value: "", state: "invalid" })
 
-
-    const [event, setevent] = useState<any>();
-    const [eventId, seteventId] = useState("");
-    const [eventTitle, seteventTitle] = useState("");
-    const [eventDescription, setEventDescription] = useState("");
 
     const [events, setevents] = useState<{
         id: number;
@@ -80,16 +77,8 @@ const BookingCalendar: React.FC<ICalendarForStaffPoprs> = ({ id }) => {
         description: string;
     }[]>([]);
 
-    useEffect(() => {
-        const fetchData = async () => {
-            const bookings = await loadForStaff(id);
-        }
-
-        fetchData();
-    }, []);
 
     useEffect(() => {
-
         var newEventsList: {
             id: number;
             title: string;
@@ -98,35 +87,73 @@ const BookingCalendar: React.FC<ICalendarForStaffPoprs> = ({ id }) => {
             className: string;
             description: string;
         }[] = [];
-        
-        listForStaff.map((booking, idx) => {
-            var startDate = new Date(booking.date);
-            var time = moment(booking.time, "hh:mm a").toDate();
 
-            startDate.setHours(time.getHours(), time.getMinutes());
+        bookingList.map((booking, idx) => {
+            if (booking.staffId === id) {
+                var startDate = new Date(booking.date);
+                var time = moment(booking.time, "hh:mm a").toDate();
 
-            newEventsList.push({
-                id: booking.bookingId,
-                title: booking.firstName + ' ' + booking.lastName,
-                start: startDate,
-                allDay: false,
-                className: "bg-red",
-                description:
-                    "TestDescription"
-            })
+                startDate.setHours(time.getHours(), time.getMinutes());
+
+                newEventsList.push({
+                    id: booking.bookingId,
+                    title: booking.firstName + ' ' + booking.lastName,
+                    start: startDate,
+                    allDay: false,
+                    className: "bg-red",
+                    description:
+                        "TestDescription"
+                })
+            }
         })
 
         setevents(newEventsList);
 
-    }, [listForStaff])
+    }, [bookingList])
+
+    useEffect(() => {
+        loadServiceOptions();
+
+        if (selectedBooking !== undefined && selectedBooking.staffId === id) {
+            loadTimeOptionsForDate(id, selectedBooking.serviceId, new Date(selectedBooking.date))
+
+            setFirstName({ value: selectedBooking.firstName, state: selectedBooking.firstName === "" ? "invalid" : "valid" });
+            setLastName({ value: selectedBooking.lastName, state: selectedBooking.lastName === "" ? "invalid" : "valid" });
+            setEmail({ value: selectedBooking.email, state: selectedBooking.email === "" ? "invalid" : "valid" });
+            setPhone({ value: selectedBooking.phone, state: selectedBooking.phone === "" ? "invalid" : "valid" });
+            setDate(new Date(selectedBooking.date));
+
+
+            serviceOptions.forEach(service => {
+                if (service.value === selectedBooking.serviceId) {
+                    setService(service);
+                }
+            });
+        }
+    }, [selectedBooking])
 
     const calendarRef = React.createRef<FullCalendar>();
     const calendarApi = calendarRef.current?.getApi();
 
+    const loadEventForModification = (id: number) => {
+        loadBooking(id);
+
+        loadServiceOptions();
+        setmodalAdd(true);
+    }
+
+    const submitModal = () => {
+        if (selectedBooking === undefined) {
+            addNewEvent();
+        } else {
+            changeEvent();
+        }
+    }
+
     const addNewEvent = () => {
         createBooking({
             bookingId: 0,
-            serviceId: service,
+            serviceId: service?.value!,
             staffId: id,
             date: date,
             time: time.value,
@@ -136,53 +163,46 @@ const BookingCalendar: React.FC<ICalendarForStaffPoprs> = ({ id }) => {
             phone: phone.value
         });
 
-        setmodalAdd(false);
+        cleanModal();
     };
 
 
     const changeEvent = () => {
-        // var newEvents = events.map((prop, key) => {
-        //   if (prop.id + "" === eventId + "") {
-        //     event.remove();
-        //     calendarApi?.addEvent({
-        //       ...prop,
-        //       title: eventTitle,
-        //       className: radios,
-        //       description: eventDescription
-        //     });
-        //     return {
-        //       ...prop,
-        //       title: eventTitle,
-        //       className: radios,
-        //       description: eventDescription
-        //     };
-        //   } else {
-        //     return prop;
-        //   }
-        // });
-        // this.setState({
-        //   modalChange: false,
-        //   events: newEvents,
-        //   radios: "bg-info",
-        //   eventTitle: undefined,
-        //   eventDescription: undefined,
-        //   eventId: undefined,
-        //   event: undefined
-        // });
+        editBooking(
+            {
+                bookingId: selectedBooking?.bookingId!,
+                serviceId: service?.value!,
+                staffId: id,
+                date: selectedBooking?.date!,
+                time: time.value,
+                firstName: firstname.value,
+                lastName: lastName.value,
+                email: email.value,
+                phone: phone.value
+            }
+        );
+
+        cleanModal();
     };
 
-    //   useEffect(() => {
-    //       createCalendar()
-    //   }, [createCalendar]);
+    const cleanModal = () => {
+        setFirstName({ value: "", state: "invalid" });
+        setLastName({ value: "", state: "invalid" });
+        setEmail({ value: "", state: "invalid" });
+        setPhone({ value: "", state: "invalid" });
+        setDate(new Date());
+
+        setmodalAdd(false);
+    }
 
     const handleSelectService = async (selection: any) => {
         loadTimeOptionsForDate(id, selection.value, date);
-        setService(selection.value);
+        setService(selection);
     }
 
     const handleSelectTime = (selection: any) => {
         setTime({ value: selection.label, state: "" });
-      }
+    }
 
     const handleInputChanged = (e: React.ChangeEvent<HTMLInputElement>, stateName: string) => {
 
@@ -222,12 +242,7 @@ const BookingCalendar: React.FC<ICalendarForStaffPoprs> = ({ id }) => {
                             weekends={true}
                             events={events}
                             eventClick={e => {
-                                setmodalChange(true);
-                                seteventId(e.event.id);
-                                seteventTitle(e.event.title);
-                                setEventDescription(e.event.extendedProps.description);
-                                setradios("bg-info");
-                                setevent(e.event);
+                                loadEventForModification(Number(e.event.id));
                             }}
                             dateClick={e => {
                                 loadServiceOptions();
@@ -246,72 +261,7 @@ const BookingCalendar: React.FC<ICalendarForStaffPoprs> = ({ id }) => {
                 >
                     <div className="modal-body">
                         <form className="new-event--form">
-                            <h1 style={{ textAlign: "center" }}>New Booking on {date.toDateString()}</h1>
-
-                            <FormGroup className="mb-0">
-                                <label className="form-control-label d-block mb-3">
-                                    Status color
-                </label>
-                                <ButtonGroup
-                                    className="btn-group-toggle btn-group-colors event-tag"
-                                    data-toggle="buttons"
-                                >
-                                    <Button
-                                        className={classnames("bg-info", {
-                                            active: radios === "bg-info"
-                                        })}
-                                        color=""
-                                        type="button"
-                                        onClick={() => setradios("bg-info")}
-                                    />
-                                    <Button
-                                        className={classnames("bg-warning", {
-                                            active: radios === "bg-warning"
-                                        })}
-                                        color=""
-                                        type="button"
-                                        onClick={() => setradios("bg-warning")}
-                                    />
-                                    <Button
-                                        className={classnames("bg-danger", {
-                                            active: radios === "bg-danger"
-                                        })}
-                                        color=""
-                                        type="button"
-                                        onClick={() => setradios("bg-danger")}
-                                    />
-                                    <Button
-                                        className={classnames("bg-success", {
-                                            active: radios === "bg-success"
-                                        })}
-                                        color=""
-                                        type="button"
-                                        onClick={() => setradios("bg-success")
-                                        }
-                                    />
-                                    <Button
-                                        className={classnames("bg-default", {
-                                            active: radios === "bg-default"
-                                        })}
-                                        color=""
-                                        type="button"
-                                        onClick={() =>
-                                            setradios("bg-default")
-                                        }
-                                    />
-                                    <Button
-                                        className={classnames("bg-primary", {
-                                            active: radios === "bg-primary"
-                                        })}
-                                        color=""
-                                        type="button"
-                                        onClick={() => {
-                                            setradios("bg-primary");
-                                        }}
-                                    />
-                                </ButtonGroup>
-                            </FormGroup>
-
+                            <h1 style={{ textAlign: "center" }}>{selectedBooking === undefined ? "New Booking" : "Update Booking"} on {date.toDateString()}</h1>
                             <FormGroup>
                                 <label
                                     className="form-control-label"
@@ -321,6 +271,7 @@ const BookingCalendar: React.FC<ICalendarForStaffPoprs> = ({ id }) => {
                             </label>
 
                                 <Select
+                                    value={service}
                                     id="input-service"
                                     placeholder="Select Service"
                                     options={serviceOptions}
@@ -352,6 +303,7 @@ const BookingCalendar: React.FC<ICalendarForStaffPoprs> = ({ id }) => {
                                     First Name*
                             </label>
                                 <Input
+                                    value={firstname.value}
                                     className="form-control-alternative"
                                     id="input-first-name"
                                     placeholder="First Name"
@@ -368,6 +320,7 @@ const BookingCalendar: React.FC<ICalendarForStaffPoprs> = ({ id }) => {
                                     Last Name*
                             </label>
                                 <Input
+                                    value={lastName.value}
                                     className="form-control-alternative"
                                     id="input-last-name"
                                     placeholder="Last Name"
@@ -384,6 +337,7 @@ const BookingCalendar: React.FC<ICalendarForStaffPoprs> = ({ id }) => {
                                     Email*
                             </label>
                                 <Input
+                                    value={email.value}
                                     className="form-control-alternative"
                                     id="input-email"
                                     placeholder="Email"
@@ -400,6 +354,7 @@ const BookingCalendar: React.FC<ICalendarForStaffPoprs> = ({ id }) => {
                                     Phone*
                             </label>
                                 <Input
+                                    value={phone.value}
                                     className="form-control-alternative"
                                     id="input-phone"
                                     placeholder="Phone"
@@ -414,133 +369,15 @@ const BookingCalendar: React.FC<ICalendarForStaffPoprs> = ({ id }) => {
                             className="new-event--add"
                             color="primary"
                             type="button"
-                            onClick={addNewEvent}
+                            onClick={submitModal}
                         >
-                            Add Booking
-            </Button>
+                            {selectedBooking === undefined ? "Add Booking" : "Update Booking"}
+                        </Button>
                         <Button
                             className="ml-auto"
                             color="link"
                             type="button"
-                            onClick={() => setmodalAdd(false)}
-                        >
-                            Close
-            </Button>
-                    </div>
-                </Modal>
-                <Modal
-                    isOpen={modalChange}
-                    toggle={() => setmodalChange(false)}
-                    className="modal-dialog-centered modal-secondary"
-                >
-                    <div className="modal-body">
-                        <Form className="edit-event--form">
-                            <FormGroup>
-                                <label className="form-control-label">Event title</label>
-                                <Input
-                                    className="form-control-alternative edit-event--title"
-                                    placeholder="Event Title"
-                                    type="text"
-                                    defaultValue={eventTitle}
-                                    onChange={e => seteventTitle(e.target.value)}
-                                />
-                            </FormGroup>
-                            <FormGroup>
-                                <label className="form-control-label d-block mb-3">
-                                    Status color
-                </label>
-                                <ButtonGroup
-                                    className="btn-group-toggle btn-group-colors event-tag mb-0"
-                                    data-toggle="buttons"
-                                >
-                                    <Button
-                                        className={classnames("bg-info", {
-                                            active: radios === "bg-info"
-                                        })}
-                                        color=""
-                                        type="button"
-                                        onClick={() => setradios("bg-info")}
-                                    />
-                                    <Button
-                                        className={classnames("bg-warning", {
-                                            active: radios === "bg-warning"
-                                        })}
-                                        color=""
-                                        type="button"
-                                        onClick={() => setradios("bg-warning")}
-                                    />
-                                    <Button
-                                        className={classnames("bg-danger", {
-                                            active: radios === "bg-danger"
-                                        })}
-                                        color=""
-                                        type="button"
-                                        onClick={() => setradios("bg-danger")}
-                                    />
-                                    <Button
-                                        className={classnames("bg-success", {
-                                            active: radios === "bg-success"
-                                        })}
-                                        color=""
-                                        type="button"
-                                        onClick={() =>
-                                            setradios("bg-success")
-                                        }
-                                    />
-                                    <Button
-                                        className={classnames("bg-default", {
-                                            active: radios === "bg-default"
-                                        })}
-                                        color=""
-                                        type="button"
-                                        onClick={() =>
-                                            setradios("bg-default")
-                                        }
-                                    />
-                                    <Button
-                                        className={classnames("bg-primary", {
-                                            active: radios === "bg-primary"
-                                        })}
-                                        color=""
-                                        type="button"
-                                        onClick={() => {
-                                            setradios("bg-primary");
-                                        }}
-                                    />
-                                </ButtonGroup>
-                            </FormGroup>
-                            <FormGroup>
-                                <label className="form-control-label">Description</label>
-                                <Input
-                                    className="form-control-alternative edit-event--description textarea-autosize"
-                                    placeholder="Event Desctiption"
-                                    type="textarea"
-                                    defaultValue={eventDescription}
-                                    onChange={e =>
-                                        setEventDescription(e.target.value)
-                                    }
-                                />
-                                <i className="form-group--bar" />
-                            </FormGroup>
-                            <input className="edit-event--id" type="hidden" />
-                        </Form>
-                    </div>
-                    <div className="modal-footer">
-                        <Button color="primary" onClick={changeEvent}>
-                            Update
-            </Button>
-                        <Button
-                            color="danger"
-                        // onClick={() => setmodalChange(false),
-                        // () => deleteEventSweetAlert()
-                        // }
-                        >
-                            Delete
-            </Button>
-                        <Button
-                            className="ml-auto"
-                            color="link"
-                            onClick={() => setmodalChange(false)}
+                            onClick={() => cleanModal()}
                         >
                             Close
             </Button>

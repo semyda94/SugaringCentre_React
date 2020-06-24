@@ -105,6 +105,9 @@ const ServiceCategory = {
 }
 
 const Booking = {
+    list: () : Promise<IBooking[]> => request.get('/bookings'),
+    details: (id: number) : Promise<IBooking> => request.get(`/bookings/${id}`),
+    edit: (booking: IBooking) => request.put(`/bookings/${booking.bookingId}`, booking),
     create: (booking: IBooking) => request.post('/bookings', booking),
     forStaff: (id : number) => request.get(`/bookings/listforstaff/${id}`)
 }
