@@ -1,9 +1,11 @@
 import React from 'react'
 
+import DashboardHeader from './../../../components/Headers/DashboardHeader'
+
 const Index = () => {
     return (
         <div>
-            <h1>Index</h1>  
+            <DashboardHeader />
         </div>
     )
 }

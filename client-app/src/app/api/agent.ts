@@ -84,7 +84,9 @@ const Shop = {
 
 const Order = {
     list: (): Promise<IOrder[]> => request.get('/order'),
-    create: (order: IOrder) => request.post('/order', order)
+    create: (order: IOrder) => request.post('/order', order),
+    count: (): Promise<number> => request.get('/order/count'),
+    amount: (): Promise<number> => request.get('/order/amount'),
 }
 
 const Service = {
@@ -109,7 +111,8 @@ const Booking = {
     details: (id: number) : Promise<IBooking> => request.get(`/bookings/${id}`),
     edit: (booking: IBooking) => request.put(`/bookings/${booking.bookingId}`, booking),
     create: (booking: IBooking) => request.post('/bookings', booking),
-    forStaff: (id : number) => request.get(`/bookings/listforstaff/${id}`)
+    forStaff: (id : number) => request.get(`/bookings/listforstaff/${id}`),
+    count: () : Promise<number> => request.get('/bookings/count')
 }
 
 export default  { Staff, Category, Product, Shop, Order, Service, ServiceCategory, Booking }

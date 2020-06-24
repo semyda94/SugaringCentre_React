@@ -23,6 +23,11 @@ namespace API.Controllers
             return await Mediator.Send(new API.Application.Bookings.ListForStaff.Query{StaffId = id});
         }
 
+        [HttpGet("count")]
+        public async Task<ActionResult<int>> Count () {
+            return await Mediator.Send(new API.Application.Bookings.Count.Query());
+        }
+
         [HttpPut("{id}")]
         public async Task<ActionResult<Unit>> Edit(int id, API.Application.Bookings.Edit.Command command) {
             command.BookingId = id;
