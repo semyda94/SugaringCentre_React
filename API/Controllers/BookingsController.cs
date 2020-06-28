@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Api.Domain;
+using API.Application.Classes;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -26,6 +27,16 @@ namespace API.Controllers
         [HttpGet("count")]
         public async Task<ActionResult<int>> Count () {
             return await Mediator.Send(new API.Application.Bookings.Count.Query());
+        }
+
+        [HttpGet("countbarstat")]
+        public async Task<ActionResult<ChartData>> BookingsCountBarStat () {
+            return await Mediator.Send(new API.Application.Bookings.BookingsCountBarChart.Query());
+        }
+
+        [HttpGet("countpermasterstat")]
+        public async Task<ActionResult<ChartData>> BookingsCountPerMasterPieStat () {
+            return await Mediator.Send(new API.Application.Bookings.BookingsCountPerMasterPieChart.Query());
         }
 
         [HttpPut("{id}")]

@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Api.Application.Orders;
 using Api.Domain;
+using API.Application.Classes;
 using API.Application.Orders;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -21,10 +22,16 @@ namespace API.Controllers
         {
             return await Mediator.Send(new Count.Query());
         }
+        
         [HttpGet("amount")]
         public async Task<ActionResult<decimal>> Amount()
         {
             return await Mediator.Send(new Amount.Query());
+        }
+
+        [HttpGet("orderscountbarstat")]
+        public async Task<ActionResult<ChartData>> OrdersCountBarStat() {
+            return await Mediator.Send(new OrdersCountBarChart.Query());
         }
 
         [HttpPost]

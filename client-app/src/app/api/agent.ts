@@ -11,7 +11,8 @@ import { IProductStat } from '../models/products/productStat';
 import {IOrder} from '../models/orders/Order'
 import { IService } from '../models/services/service'
 import { IServiceCategory } from '../models/services/serviceCategory';
-import { IBooking } from '../models/Booking'
+import { IBooking } from '../models/Booking';
+import { IBarOptions } from '../models/charts/barChart';
 
 axios.defaults.baseURL = 'http://localhost:5000/api';
 
@@ -87,6 +88,7 @@ const Order = {
     create: (order: IOrder) => request.post('/order', order),
     count: (): Promise<number> => request.get('/order/count'),
     amount: (): Promise<number> => request.get('/order/amount'),
+    orderCountBarStat: () : Promise<IBarOptions> => request.get('/order/orderscountbarstat'),
 }
 
 const Service = {
@@ -112,7 +114,9 @@ const Booking = {
     edit: (booking: IBooking) => request.put(`/bookings/${booking.bookingId}`, booking),
     create: (booking: IBooking) => request.post('/bookings', booking),
     forStaff: (id : number) => request.get(`/bookings/listforstaff/${id}`),
-    count: () : Promise<number> => request.get('/bookings/count')
+    count: () : Promise<number> => request.get('/bookings/count'),
+    bookingCountBarStat: () : Promise<IBarOptions> => request.get('/bookings/countbarstat'),
+    bookingCountPermasterPieStat: () : Promise<IBarOptions> => request.get('/bookings/countpermasterstat')
 }
 
 export default  { Staff, Category, Product, Shop, Order, Service, ServiceCategory, Booking }
