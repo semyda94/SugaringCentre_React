@@ -27,10 +27,14 @@ namespace API.Application.Bookings {
             
 
             public async Task<Unit> Handle (Command request, CancellationToken cancellationToken) {
+
+                var time = DateTime.ParseExact(request.Time, "HH:mm", System.Globalization.CultureInfo.InvariantCulture);
+                var dateTime = request.Date.AddHours(time.Hour + 12).AddMinutes(time.Minute);
+
                 var booking = new Booking {
                     ServiceId = request.ServiceId,
                     StaffId = request.StaffId,
-                    Date = request.Date,
+                    Date = dateTime,
                     Time = request.Time,
                     FirstName = request.FirstName,
                     LastName = request.LastName,
