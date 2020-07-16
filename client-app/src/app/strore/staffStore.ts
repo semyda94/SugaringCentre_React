@@ -6,6 +6,7 @@ import { IStaff } from '../models/staff/staff';
 class StaffStore {
     @observable staffRegistry = new Map();
     @observable staffList : IStaff[] = [];
+    @observable staffForMain: IStaff[] = [];
     
     @observable bookingSelectedStaff : number = 0;
 
@@ -53,6 +54,22 @@ class StaffStore {
             runInAction('after load staff error', () => {
                 this.loadingInitial = false;
             })
+        }
+    }
+
+    @action loadStaffForMain = async () => {
+        this.staffForMain = [];
+
+        try {
+            const staff = await agent.Staff.top();
+
+            runInAction('continue load staff', () => {
+                staff.forEach(staff => {
+                    this.staffForMain.push(staff);
+                });
+            })
+        } catch (error) {
+            
         }
     }
 

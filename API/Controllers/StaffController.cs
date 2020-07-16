@@ -17,6 +17,11 @@ namespace API.Controllers
             return await Mediator.Send(new List.Query());
         }
 
+        [HttpGet("top")]
+        public async Task<ActionResult<List<Staff>>> Top() {
+            return await Mediator.Send(new Application.Staffs.Top.Query());
+        }
+
         [HttpGet("{id}")]
         [Authorize]
         public async Task<ActionResult<Staff>> Details(int id) {

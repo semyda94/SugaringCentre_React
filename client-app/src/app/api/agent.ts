@@ -14,7 +14,7 @@ import { IServiceCategory } from '../models/services/serviceCategory';
 import { IBooking } from '../models/Booking';
 import { IBarOptions } from '../models/charts/barChart';
 
-axios.defaults.baseURL = 'https://sugaringcentrerg.azurewebsites.net/api'
+ axios.defaults.baseURL = 'https://sugaringcentrerg.azurewebsites.net/api'
 // axios.defaults.baseURL = 'http://localhost:5000/api';
 
 axios.interceptors.response.use(undefined, error => {
@@ -55,6 +55,7 @@ const request = {
 
 const Staff = {
     list: () : Promise<IStaff[]> => request.get('/staff'),
+    top: () : Promise<IStaff[]> => request.get('/staff/top'),
     detatil: (id: number) => request.get(`/staff/${id}`),
     workingDays: (id: number) : Promise<number[]> => request.get(`/staff/workingdays/${id}`),
     timeOptions: (staffId: number, serviceId: number, date: Date) : Promise<{value: Date, label: string}[]> => request.get(`/staff/timeoptions/${staffId}/${serviceId}/${date.toDateString()}`),

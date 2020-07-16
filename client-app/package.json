@@ -3,7 +3,6 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@fortawesome/fontawesome-free": "5.12.1",
     "@fullcalendar/core": "^4.4.2",
     "@fullcalendar/daygrid": "^4.4.2",
     "@fullcalendar/interaction": "^4.4.2",
@@ -31,6 +30,7 @@
     "chart.js": "^2.9.3",
     "classnames": "2.2.6",
     "dropzone": "^5.7.0",
+    "font-awesome": "^4.7.0",
     "mobx": "^5.15.4",
     "mobx-react-lite": "^2.0.7",
     "moment": "^2.26.0",

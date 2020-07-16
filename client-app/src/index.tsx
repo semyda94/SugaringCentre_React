@@ -36,7 +36,6 @@ import "./assets/vendor/@fortawesome/fontawesome-free/css/all.min.css";
 // core styles
 import "./assets/scss/argon-dashboard-pro-react.scss";
 import './index.css'
-
 // Layouts
 import AdminConsole from './layouts/AdminConsole';
 // import Authentication from './layouts/Authentication';

@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace Api.Domain
 {
@@ -13,6 +14,7 @@ namespace Api.Domain
         public int StaffId { get; set; }
         public string Image { get; set; }
         
+        [JsonIgnore]
         public virtual Staff StaffNavigation { get; set; }
     }
 }
