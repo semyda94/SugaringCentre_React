@@ -8,7 +8,7 @@ import { ICategory } from './../models/products/category'
 import { IProduct } from './../models/products/product'
 import { IProductImage } from '../models/products/productImage';
 import { IProductStat } from '../models/products/productStat';
-import {IOrder} from '../models/orders/Order'
+import { IOrder } from '../models/orders/Order'
 import { IService } from '../models/services/service'
 import { IServiceCategory } from '../models/services/serviceCategory';
 import { IBooking } from '../models/Booking';

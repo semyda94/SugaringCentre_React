@@ -20,36 +20,40 @@ const Shop = () => {
 
     const productStore = useContext(ProductStore);
     const categoryStore = useContext(CategoryStore);
-    const { loadImageForProduct, loadProductsForShop, productList, productImages, openedCollapses, priceSliderValues, } = productStore
+    const { loadImageForProduct, loadProductsForShop, productList, filteredList, productImages, openedCollapses, priceSliderValues, updateSelectedCategory, updatePrice } = productStore
     const { loadCategory, categoryList } = categoryStore
 
     useEffect(() => {
-        loadCategory();
-        loadProductsForShop(1, 12, 0, 0, ",");
+        const fetchData = async () => {
+            await loadCategory();
+            await loadProductsForShop();
 
-        const slider = Slider.create(document.getElementById("priceSlider")!, {
-            start: [0, 1000],
-            connect: [false, true, false],
-            step: 0.01,
-            range: { min: 0.0, max: 1000 },
-            // connect: true,
-        });
+            const slider = Slider.create(document.getElementById("priceSlider")!, {
+                start: [0, 1000],
+                connect: [false, true, false],
+                step: 0.01,
+                range: { min: priceSliderValues[0], max: priceSliderValues[1] },
+                // connect: true,
+            });
 
-        slider.on(
-            "set",
-            function (values: number[]) {
-                console.log("Update");
-                loadProductsForShop(1, 1, priceSliderValues[0], priceSliderValues[1], ",");
-            }
-        );
+            slider.on(
+                "set",
+                function (values: number[]) {
+                    console.log("Update");
+                    updatePrice(priceSliderValues[0], priceSliderValues[1]);
+                }
+            );
 
-        slider.on(
-            "update",
-            function (values: number[]) {
-                priceSliderValues[0] = values[0];
-                priceSliderValues[1] = values[1];
-            }
-        )
+            slider.on(
+                "update",
+                function (values: number[]) {
+                    priceSliderValues[0] = values[0];
+                    priceSliderValues[1] = values[1];
+                }
+            )
+        }
+
+        fetchData();
     }, [])
 
     // with this function we create an array with the opened collapses
@@ -65,6 +69,11 @@ const Shop = () => {
             openedCollapses.push(collapse);
         }
     };
+
+    const CategoryChanged = (id: number) => {
+        console.log(id)
+        updateSelectedCategory(id);
+    }
 
     return (
         <div>
@@ -153,6 +162,7 @@ const Shop = () => {
                                                                     className="custom-control-input"
                                                                     id={"customCheck" + idx}
                                                                     type="checkbox"
+                                                                    onChange={e => CategoryChanged(category.categoryId)}
                                                                 />
                                                                 <label
                                                                     className="custom-control-label"
@@ -202,7 +212,7 @@ const Shop = () => {
                             <Col md={9}>
                                 <Row>
                                     {
-                                        productList.map((product, idx) => {
+                                        filteredList.map((product, idx) => {
                                             return (
                                                 <Col md={4} key={idx}>
                                                     <Card style={{

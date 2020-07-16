@@ -4,9 +4,11 @@ import agent from './../../api/agent'
 import { IProduct } from '../../models/products/product'
 // import { IProductImage } from '../../models/products/productImage'
 import { IProductStat } from '../../models/products/productStat'
+import th from '../../../assets/vendor/fullcalendar/dist/locale/th'
 
 class ProductStore {
     @observable productList: IProduct[] = []
+    @observable filteredList: IProduct[] = []
     @observable productDetails: IProduct | undefined = undefined;
     @observable productStat: IProductStat | undefined = undefined;
     @observable productImages =  new Map();
@@ -18,6 +20,13 @@ class ProductStore {
     
     @observable openedProductCollapses: string[] = []
     @observable priceSliderValues: number[] = []
+    @observable categorySelected: number[] = []
+
+    @observable page = 1;
+    @observable pageSize = 12;
+    @observable minPrice = 0;
+    @observable maxPrice = 0;
+
 
     @action loadProducts = async () => {
         this.loadingInitial = true;
@@ -40,12 +49,13 @@ class ProductStore {
         }
     }
 
-    @action loadProductsForShop = async (page: number, pageSize: number, minPrice: number, maxPrice: number, selectedCategories: string) => {
+    @action loadProductsForShop = async () => {
         this.loadingInitial = true;
         this.productList = [];
 
         try {
-            const products = await agent.Shop.list(page, pageSize, minPrice, maxPrice, selectedCategories);
+            var categorysJoined = this.categorySelected.join(',');
+            const products = await agent.Shop.list(this.page, this.pageSize, this.minPrice, this.maxPrice, categorysJoined === "" ? "," : categorysJoined );
 
             runInAction('coninue load products', () => {
                 this.productList = products;
@@ -62,6 +72,8 @@ class ProductStore {
                 this.productList.map(p => {
                     this.loadImageForProduct(p.productId)
                 });
+
+                this.filteredList = this.productList;
 
                 this.loadingInitial = false;
             })
@@ -132,7 +144,6 @@ class ProductStore {
         }
     }
 
-
     @action createProduct = async (product: IProduct) => {
         this.submiting = true;
         
@@ -191,6 +202,48 @@ class ProductStore {
             runInAction('error delere product', () => {
                 this.submiting = false;
             })
+        }
+    }
+
+    @action updateSelectedCategory = async (id: number) => {
+        const index = this.categorySelected.indexOf(id, 0);
+
+        if (index > -1) {
+            this.categorySelected.splice(index, 1);
+        } else {
+            this.categorySelected.push(id);
+        }
+
+        try {
+            var categorysJoined = this.categorySelected.join(',');
+            
+            const products = await agent.Shop.list(this.page, this.pageSize, this.minPrice, this.maxPrice, categorysJoined === "" ? "," : categorysJoined );
+
+            runInAction('coninue load products', () => {
+                this.productList = products;
+
+                this.filteredList = this.productList;
+            })
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    @action updatePrice = async (min: number, max: number) => {
+        this.minPrice = min;
+        this.maxPrice = max;
+        
+        try {
+            var categorysJoined = this.categorySelected.join(',');
+            const products = await agent.Shop.list(this.page, this.pageSize, this.minPrice, this.maxPrice, categorysJoined === "" ? "," : categorysJoined );
+
+            runInAction('coninue load products', () => {
+                this.productList = products;
+
+                this.filteredList = this.productList;
+            })
+        } catch (error) {
+            console.log(error);
         }
     }
 }
