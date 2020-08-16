@@ -47,7 +47,7 @@ const BookingCalendar: React.FC<ICalendarForStaffPoprs> = ({ id }) => {
 
     const { loadTimeOptionsForDate, timeOptions } = staffStore
     const { loadServiceOptions, serviceOptions } = serviceStore;
-    const { bookingList, selectedBooking, loadBooking, createBooking, editBooking } = bookingStore;
+    const { bookingList, selectedBooking, loadBooking, createBooking, editBooking, cancelBooking } = bookingStore;
 
     const [alert, setalert] = useState<any>(null);
 
@@ -165,6 +165,12 @@ const BookingCalendar: React.FC<ICalendarForStaffPoprs> = ({ id }) => {
 
         cleanModal();
     };
+
+    const cancelBookingPrep = () => {
+        cancelBooking();
+
+        cleanModal();
+    }
 
 
     const changeEvent = () => {
@@ -372,6 +378,15 @@ const BookingCalendar: React.FC<ICalendarForStaffPoprs> = ({ id }) => {
                             onClick={submitModal}
                         >
                             {selectedBooking === undefined ? "Add Booking" : "Update Booking"}
+                        </Button>
+                        <Button
+                            className="new-event--add"
+                            color="danger"
+                            type="button"
+                            onClick={cancelBookingPrep}
+                            hidden={selectedBooking === undefined ? true : false}
+                        >
+                            Cancel
                         </Button>
                         <Button
                             className="ml-auto"

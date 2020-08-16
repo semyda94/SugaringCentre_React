@@ -19,6 +19,11 @@ namespace API.Controllers
             return await Mediator.Send(new API.Application.Bookings.Details.Query {Id = id});
         }
 
+        [HttpDelete("{id}")]
+        public async Task<ActionResult<Unit>> Delete(int id) {
+            return await Mediator.Send(new API.Application.Bookings.Delete.Command{ Id = id});
+        }
+
         [HttpGet("listforstaff/{id}")]
         public async Task<ActionResult<List<Booking>>> ListForStaff(int id) {
             return await Mediator.Send(new API.Application.Bookings.ListForStaff.Query{StaffId = id});

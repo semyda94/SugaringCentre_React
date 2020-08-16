@@ -38,7 +38,7 @@ class BookingStore{
             await agent.Booking.edit(booking);
 
             runInAction(() => {
-                this.selectedBooking = undefined;
+                this.cleanSelectedBooking();
                 this.submiting = false;
             });
         } catch (error) {
@@ -46,9 +46,47 @@ class BookingStore{
             
             runInAction('Error update booking', () => {
                 this.submiting = false;
-                this.selectedBooking = undefined;
+                this.cleanSelectedBooking();
             })
         }
+    }
+
+    @action cancelBooking = async () => {
+        if (this.selectedBooking !== undefined) {
+            this.submiting = true;
+
+            try {
+                await agent.Booking.delete(this.selectedBooking.bookingId);
+                
+                runInAction(() => {
+                    var id = -1;
+
+                    this.bookingList.forEach(b => {
+                        if (b.bookingId == this.selectedBooking!.bookingId) {
+                            id = b.bookingId;
+                        }
+                    });
+
+                    if (id >= 0 ) {
+                        this.bookingList.splice(id, 1);
+                    }
+                    
+                    this.cleanSelectedBooking();
+                    this.submiting = false;
+                })
+            } catch (error) {
+                console.log(error);
+
+                runInAction('Error delete booking', () => {
+                    this.submiting = false;
+                    this.cleanSelectedBooking();
+                });
+            }
+        }
+    }
+
+    @action cleanSelectedBooking = () => {
+        this.selectedBooking = undefined;
     }
 
     @action loadBookings = async () => {
