@@ -14,8 +14,8 @@ import { IServiceCategory } from '../models/services/serviceCategory';
 import { IBooking } from '../models/Booking';
 import { IBarOptions } from '../models/charts/barChart';
 
- axios.defaults.baseURL = 'https://sugaringcentrerg.azurewebsites.net/api'
-// axios.defaults.baseURL = 'http://localhost:5000/api';
+// axios.defaults.baseURL = 'https://sugaringcentrerg.azurewebsites.net/api'
+ axios.defaults.baseURL = 'http://localhost:5000/api';
 
 axios.interceptors.response.use(undefined, error => {
 const {status, data, config} = error.response;
@@ -24,9 +24,9 @@ const {status, data, config} = error.response;
         // toast.error('API server down');
     }
 
-    if (status === 404) {
-        history.push('/notfound');
-    }
+    // if (status === 404) {
+    //     history.push('/notfound');
+    // }
 
     if (status === 400 && config.method === 'get') {
         history.push('/notfound');

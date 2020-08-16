@@ -4,13 +4,17 @@ import { Container, Card, Row, Col, Input, FormGroup, Button, Form } from 'react
 
 import Calendar, { CalendarTileProperties } from 'react-calendar';
 import Select from 'react-select';
+import ReactNotification, {store} from 'react-notifications-component'
 
 import ServiceStore from '../../../app/strore/serviceStores/serviceStore';
 import StaffStore from '../../../app/strore/staffStore'
 import BookingStore from '../../../app/strore/bookingStore'
 
+import 'react-notifications-component/dist/theme.css'
 import 'react-calendar/dist/Calendar.css';
 import './../../../assets/css/booking-confirmation.css';
+
+import { history } from '../../../';
 
 const BookingConfigrmation = (props: any) => {
   const serviceStore = useContext(ServiceStore);
@@ -86,10 +90,28 @@ const BookingConfigrmation = (props: any) => {
       email: email.value,
       phone: phone.value
     });
+
+    store.addNotification({
+      title: "Booked!",
+      message: "Your booking has been submited. You should get confirmation email/text",
+      type: "success",
+      insert: "top",
+      container: "top-center",
+      animationIn: ["animated", "fadeIn"],
+      animationOut: ["animated", "fadeOut"],
+      dismiss: {
+        duration: 5000,
+      },
+      onRemoval: (id, removedBy) => {
+        history.push('/');
+        window.location.reload(false);
+      }
+    });
   }
 
   return (
     <div>
+      <ReactNotification />
       <div style={{
         minHeight: "375px",
         maxHeight: "540px",
@@ -105,7 +127,7 @@ const BookingConfigrmation = (props: any) => {
         }}>
 
         <Card style={{ paddingTop: "70px", paddingBottom: "20px", textAlign: "center" }}>
-          <Form noValidate onSubmit={handleOnSubmit}>
+          <Form noValidate>
             <Row>
               <Col md={6}>
                 <Container>
@@ -289,7 +311,9 @@ const BookingConfigrmation = (props: any) => {
                         email.state === "invalid" || 
                         phone.state === "invalid"
                       }
-                      className="bookItButton">Book It</Button>
+                      className="bookItButton"
+                      onClick={handleOnSubmit}
+                      >Book It</Button>
                   </div>
                 </div>
               </Col>
