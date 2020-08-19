@@ -2,8 +2,8 @@ import { observable, action, runInAction } from "mobx";
 import { createContext } from "react";
 import agent from "./../api/agent";
 
-import { IBooking } from './../models/Booking'
-import th from "../../assets/vendor/fullcalendar/dist/locale/th";
+import { IBooking } from './../models/Booking';
+import { EmailService} from './../services/EmailService';
 
 class BookingStore{ 
     @observable bookingList : IBooking[] = [];
@@ -20,6 +20,9 @@ class BookingStore{
 
             runInAction('continue create booking', () => {
                 this.submiting = false;
+                console.log(booking);
+                
+                EmailService.NewBookingEmail(booking.email, booking.date, booking.time)
             })
         } catch (error) {
             console.log(error);

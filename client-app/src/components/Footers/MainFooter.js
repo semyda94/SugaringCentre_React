@@ -1,6 +1,8 @@
 import React, { useState } from 'react'
 import { Container, Row, Col, Button, Form, FormGroup, Input } from 'reactstrap'
 
+import { EmailService } from "./../../app/services/EmailService"
+
 import './../../assets/css/mainFooter.css';
 import "./../../assets/vendor/@fortawesome/fontawesome-free/css/all.min.css";
 
@@ -12,7 +14,7 @@ const MainFooter = () => {
     const [subject, setSubject] = useState({ value: "", state: "invalid" });
     const [message, setMessage] = useState({ value: "", state: "invalid" });
 
-    const InputChange = (name: string, newValue: string) => {
+    const InputChange = (name, newValue) => {
         const newState = newValue === "" ? "invalid" : "valid";
 
         switch (name) {
@@ -40,7 +42,7 @@ const MainFooter = () => {
     }
 
     const SendSMTP = () => {
-
+        EmailService.ContactEmail(name.value, email.value, message.value,);
     }
 
     const ClearStates = () => {
