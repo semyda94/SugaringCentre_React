@@ -68,7 +68,7 @@ namespace Api.Application.Staffs
                         timeOptions.Add(new TimeOption
                         {
                             Value = i,
-                            Label = i.ToShortTimeString()
+                            Label = i.ToString("HH:mm")
                         });
                     }
                 }
