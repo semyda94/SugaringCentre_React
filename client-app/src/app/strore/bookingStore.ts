@@ -12,7 +12,7 @@ class BookingStore{
     @observable listForStaff : IBooking[] = [];
     @observable submiting = false;
 
-    @action createBooking = async (booking: IBooking) => {
+    @action createBooking = async (booking: IBooking, masterName: string) => {
         this.submiting = true;
 
         try {
@@ -22,7 +22,7 @@ class BookingStore{
                 this.submiting = false;
                 console.log(booking);
                 
-                EmailService.NewBookingEmail(booking.email, booking.date, booking.time)
+                EmailService.NewBookingEmail(booking.email, booking.date, booking.time, masterName);
             })
         } catch (error) {
             console.log(error);

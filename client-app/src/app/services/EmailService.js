@@ -18,11 +18,11 @@ const EmailService =  {
      ContactEmail(name, email, message) {
         send(contactTemplateId, {message_html: message, from_name: name, reply_to: email});
     },
-    NewBookingEmail(email, date, time ) {
+    NewBookingEmail(email, date, time, master ) {
         const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
         const formatedDate = date.toLocaleDateString(undefined, options);
          
-        send(newBookingTemplateId, {email_to: email, date: formatedDate, time: time});
+        send(newBookingTemplateId, {email_to: email, date: formatedDate, time: time, master: master});
     }
 }
 

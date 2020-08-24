@@ -89,7 +89,8 @@ const BookingConfigrmation = (props: any) => {
       lastName: lastName.value,
       email: email.value,
       phone: phone.value
-    });
+    }, masterSelected!.label
+    );
 
     store.addNotification({
       title: "Booked!",
@@ -103,8 +104,8 @@ const BookingConfigrmation = (props: any) => {
         duration: 5000,
       },
       onRemoval: (id, removedBy) => {
-        history.push('/');
-        window.location.reload(false);
+        // history.push('/');
+        // window.location.reload(false);
       }
     });
   }

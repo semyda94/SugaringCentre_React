@@ -72,7 +72,7 @@ const Booking = () => {
                                 {staffList.map((staff, idx) => {
                                     return (
                                         <TabPane key={idx} tabId={"tabs" + staff.staffId}>
-                                            <BookingCalendar id={staff.staffId}/>
+                                            <BookingCalendar id={staff.staffId} name={staff.firstName + ' ' + staff.lastName}/>
                                         </TabPane>
                                     );
                                 })}

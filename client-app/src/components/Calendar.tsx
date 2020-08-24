@@ -35,11 +35,12 @@ import moment from "moment";
 
 interface ICalendarForStaffPoprs {
     id: number;
+    name: string;
 }
 
 let calendar: FullCalendar;
 
-const BookingCalendar: React.FC<ICalendarForStaffPoprs> = ({ id }) => {
+const BookingCalendar: React.FC<ICalendarForStaffPoprs> = ({ id, name }) => {
 
     const staffStore = useContext(StaffStore);
     const serviceStore = useContext(ServiceStore);
@@ -161,7 +162,8 @@ const BookingCalendar: React.FC<ICalendarForStaffPoprs> = ({ id }) => {
             lastName: lastName.value,
             email: email.value,
             phone: phone.value
-        });
+        }, name
+        );
 
         cleanModal();
     };
