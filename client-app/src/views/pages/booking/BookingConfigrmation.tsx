@@ -104,8 +104,8 @@ const BookingConfigrmation = (props: any) => {
         duration: 5000,
       },
       onRemoval: (id, removedBy) => {
-        // history.push('/');
-        // window.location.reload(false);
+        history.push('/');
+        window.location.reload(false);
       }
     });
   }
