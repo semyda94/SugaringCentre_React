@@ -102,7 +102,7 @@ const ServiceDetails: React.FC<IServiceDetailsProps> = ({ selectedService, modif
         let dropelement = document.getElementById("dropzone-multiple");
         let previewContainer = document.getElementsByClassName("dz-preview-multiple")[0]
         new Dropzone(dropelement === null ? "" : dropelement, {
-            url: "https://",
+            url: "https://www.sugaringcentre.com/admin/services",
             thumbnailWidth: undefined,
             thumbnailHeight: undefined,
             previewsContainer: (previewContainer as HTMLElement),

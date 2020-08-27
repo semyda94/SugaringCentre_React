@@ -48,7 +48,7 @@ const ProductDetails: React.FC<IProp> = ({ selectedProduct }) => {
     const [title, setTitle] = useState({ value: "", state: "invalid" })
     const [price, setPrice] = useState({ value: "", state: "invalid" })
     const [desc, setDesc] = useState({ value: "", state: "invalid" })
-    const [spec, setSpec] = useState({ value: "", state: "invalid" })
+    const [spec, setSpec] = useState({ value: "", state: "valid" })
 
     const [previewImage, setPreviewImage] = useState(noImage);
 
@@ -102,13 +102,13 @@ const ProductDetails: React.FC<IProp> = ({ selectedProduct }) => {
             setSelectedCategories(selectedOptions);
         }
 
-        productDetails?.productImages.forEach(image => {
-            Dropzone.instances[0].displayExistingFile({ name: "", size: image.image.length }, image.image);
-        });
+        // productDetails?.productImages.forEach(image => {
+        //     Dropzone.instances[0].displayExistingFile({ name: "", size: image.image.length }, image.image);
+        // });
 
-        if (productDetails?.productImages !== undefined && productDetails?.productImages.length > 0) {
-            setPreviewImage(productDetails?.productImages[0]!.image);
-        }
+        // if (productDetails?.productImages !== undefined && productDetails?.productImages.length > 0) {
+        //     setPreviewImage(productDetails?.productImages[0]!.image);
+        // }
 
 
     }, [productDetails])
@@ -128,7 +128,7 @@ const ProductDetails: React.FC<IProp> = ({ selectedProduct }) => {
         let dropelement = document.getElementById("dropzone-multiple");
         let previewContainer = document.getElementsByClassName("dz-preview-multiple")[0]
         new Dropzone(dropelement === null ? "" : dropelement, {
-            url: "https://",
+            url: "https://www.sugaringcentre.com/admin/products",
             thumbnailWidth: undefined,
             thumbnailHeight: undefined,
             previewsContainer: (previewContainer as HTMLElement),
@@ -467,7 +467,7 @@ const ProductDetails: React.FC<IProp> = ({ selectedProduct }) => {
                                 </div>
                                 <hr className="my-4" />
 
-                                <h6 className="heading-small text-muted mb-4">
+                                {/* <h6 className="heading-small text-muted mb-4">
                                     Details
                     </h6>
                                 <div className="pl-lg-4">
@@ -500,7 +500,7 @@ const ProductDetails: React.FC<IProp> = ({ selectedProduct }) => {
                                             </FormGroup>
                                         </Col>
                                     </Row>
-                                </div>
+                                </div> */}
 
                                 <div className="pl-lg-4" style={{ textAlign: "center" }}>
                                     <Row>
