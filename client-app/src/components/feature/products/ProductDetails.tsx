@@ -102,13 +102,13 @@ const ProductDetails: React.FC<IProp> = ({ selectedProduct }) => {
             setSelectedCategories(selectedOptions);
         }
 
-        // productDetails?.productImages.forEach(image => {
-        //     Dropzone.instances[0].displayExistingFile({ name: "", size: image.image.length }, image.image);
-        // });
+        productDetails?.productImages.forEach(image => {
+            Dropzone.instances[0].displayExistingFile({ name: "", size: image.image.length }, image.image);
+        });
 
-        // if (productDetails?.productImages !== undefined && productDetails?.productImages.length > 0) {
-        //     setPreviewImage(productDetails?.productImages[0]!.image);
-        // }
+        if (productDetails?.productImages !== undefined && productDetails?.productImages.length > 0) {
+            setPreviewImage(productDetails?.productImages[0]!.image);
+        }
 
 
     }, [productDetails])
@@ -128,7 +128,7 @@ const ProductDetails: React.FC<IProp> = ({ selectedProduct }) => {
         let dropelement = document.getElementById("dropzone-multiple");
         let previewContainer = document.getElementsByClassName("dz-preview-multiple")[0]
         new Dropzone(dropelement === null ? "" : dropelement, {
-            url: "https://www.sugaringcentre.com/admin/products",
+            url: "/",
             thumbnailWidth: undefined,
             thumbnailHeight: undefined,
             previewsContainer: (previewContainer as HTMLElement),
@@ -190,7 +190,7 @@ const ProductDetails: React.FC<IProp> = ({ selectedProduct }) => {
     const handleSubmit = () => {
 
         let filesToUpload: IProductImage[] = [];
-        Dropzone.instances[0].getUploadingFiles().map((image) => {
+        Dropzone.instances[0].files.map((image) => {
             filesToUpload.push(
                 {
                     productImageId: 0,
@@ -210,13 +210,12 @@ const ProductDetails: React.FC<IProp> = ({ selectedProduct }) => {
             productImages: filesToUpload
         }
 
-        console.log(product);
-        
-
         if (selectedProduct === 0)
             createProduct(product);
         else
             updateProduct(product);
+        console.log(product);
+        
     }
 
     return (
@@ -370,12 +369,12 @@ const ProductDetails: React.FC<IProp> = ({ selectedProduct }) => {
                                                     Title
                             </label>
                                                 <Input
-                                                    value={title.value}
                                                     id="input-title"
                                                     placeholder="Title"
                                                     type="text"
                                                     valid={title.state === "valid"}
                                                     invalid={title.state !== "valid"}
+                                                    value={title.value}
                                                     onChange={e => handleInputChange("title", e.target.value)}
                                                 />
                                                 <div className="invalid-feedback">Title shouldn't be empty</div>
@@ -467,7 +466,7 @@ const ProductDetails: React.FC<IProp> = ({ selectedProduct }) => {
                                 </div>
                                 <hr className="my-4" />
 
-                                {/* <h6 className="heading-small text-muted mb-4">
+                                <h6 className="heading-small text-muted mb-4">
                                     Details
                     </h6>
                                 <div className="pl-lg-4">
@@ -500,14 +499,15 @@ const ProductDetails: React.FC<IProp> = ({ selectedProduct }) => {
                                             </FormGroup>
                                         </Col>
                                     </Row>
-                                </div> */}
+                                </div>
 
                                 <div className="pl-lg-4" style={{ textAlign: "center" }}>
                                     <Row>
                                         <Col>
                                             <Button
                                                 color="success"
-                                                type="submit"
+                                                onClick={handleSubmit}
+                                                // type="submit"
                                                 disabled=
                                                 {
                                                     title.state === "invalid" ||

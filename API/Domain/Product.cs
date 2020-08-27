@@ -24,7 +24,6 @@ namespace Api.Domain
         public string Title { get; set; }
         [Column("Description")]
         public string Desc { get; set; }
-        [MaxLength(255)]
         public string ShortDescription { get; set; }
         [RegularExpression(@"^\d+\.\d{0,2}$")]
         [Column(TypeName = "decimal(10,2)")]

@@ -102,7 +102,7 @@ const ServiceDetails: React.FC<IServiceDetailsProps> = ({ selectedService, modif
         let dropelement = document.getElementById("dropzone-multiple");
         let previewContainer = document.getElementsByClassName("dz-preview-multiple")[0]
         new Dropzone(dropelement === null ? "" : dropelement, {
-            url: "https://www.sugaringcentre.com/admin/services",
+            url: "http://localhost:3000/admin/services",
             thumbnailWidth: undefined,
             thumbnailHeight: undefined,
             previewsContainer: (previewContainer as HTMLElement),
@@ -156,10 +156,9 @@ const ServiceDetails: React.FC<IServiceDetailsProps> = ({ selectedService, modif
 
     const handleSubmit = () => {
         let fileToUpload: string = ""
-        console.log(Dropzone.instances[0].getUploadingFiles());
 
-        if (Dropzone.instances[0].getUploadingFiles().length !== 0) {
-            fileToUpload = Dropzone.instances[0].getUploadingFiles()[0].dataURL!;
+        if (Dropzone.instances[0].files.length !== 0) {
+            fileToUpload = Dropzone.instances[0].files[0].dataURL!;
         }
 
         const service: IService = {

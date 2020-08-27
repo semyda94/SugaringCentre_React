@@ -235,7 +235,7 @@ const Details = () => {
 
         if (username.state === "valid") {
             let filesToUpload: IStaffImage[] = [];
-            Dropzone.instances[0].getUploadingFiles().map((image) => {
+            Dropzone.instances[0].files.map((image) => {
                 filesToUpload.push(
                     {
                         staffImageId: 0,

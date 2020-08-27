@@ -239,14 +239,14 @@ const Shop = () => {
                                                                             fontWeight: 700,
                                                                             fontSize: "1.3em",
                                                                             lineHeight: "1.55em",
-                                                                            marginBottom: "10px",
-                                                                            marginTop: "10px"
+                                                                            // marginBottom: "10px",
+                                                                            // marginTop: "10px"
                                                                         }}>
                                                                         {product.title}
                                                                     </h4>
                                                                 </Link>
                                                             </CardTitle>
-                                                            <CardText>
+                                                            {/* <CardText>
                                                                 <span style={
                                                                     {
                                                                         color: "#999999",
@@ -257,7 +257,7 @@ const Shop = () => {
                                                                 }>
                                                                     {product.shortDescription}
                                                                 </span>
-                                                            </CardText>
+                                                            </CardText> */}
                                                             <CardText style={{ textAlign: "center" }}>
                                                                 <span style={
                                                                     {
@@ -335,7 +335,7 @@ const Shop = () => {
                                                     </h4>
                                                 </Link>
                                             </CardTitle>
-                                            <CardText>
+                                            {/* <CardText>
                                                 <span style={
                                                     {
                                                         color: "#999999",
@@ -346,7 +346,7 @@ const Shop = () => {
                                                 }>
                                                     {product.shortDescription}
                                                 </span>
-                                            </CardText>
+                                            </CardText> */}
                                             <CardText style={{ textAlign: "center" }}>
                                                 <span style={
                                                     {

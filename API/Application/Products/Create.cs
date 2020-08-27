@@ -36,7 +36,7 @@ namespace Api.Application.Products {
                 var newProduct = new Product {
                     Title = request.Title,
                     Price = request.Price,
-                    Desc = request.Desc,
+                    Desc = "<p></br><p>",
                     ShortDescription = request.ShortDescription
                 };
 
